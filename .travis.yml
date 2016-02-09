@@ -7,7 +7,7 @@ python:
 addons:
   apt:
     packages:
-    - libattr-dev
+    - libattr1-dev
     - libfuse-dev
 install:
     - pip install --upgrade pip
