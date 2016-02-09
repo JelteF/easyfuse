@@ -8,6 +8,7 @@ addons:
   apt:
     packages:
     - libattr1-dev
+    - libfuse2
     - libfuse-dev
     - python-dev
     - python3-dev
