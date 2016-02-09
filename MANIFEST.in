@@ -1,0 +1,4 @@
+include *.md
+include *.rst
+recursive-include easyfuse *.py
+recursive-include python2_source/easyfuse *.py
