@@ -14,6 +14,7 @@ Before installing the library itself be sure to install the system
 dependencies. For Ubuntu these should be enough:
 
 ::
+
     sudo apt-get install libattr1-dev libfuse-dev
     # Python 2 developement headers
     sudo apt-get install python-dev
