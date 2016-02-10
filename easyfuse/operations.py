@@ -143,3 +143,8 @@ class Operations(LlfuseOperations):
         """
         logging.debug('open %s %s %s', self.fs[inode], flags)
         return inode
+
+    def mkdir(self, parent_inode, name, mode, ctx):
+        logging.debug('mkdir %s', name)
+        return self.dir_class(os.fsdecode(name), self.fs,
+                              self.fs[parent_inode])
