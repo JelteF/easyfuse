@@ -154,7 +154,7 @@ class Operations(LlfuseOperations):
                               self.fs[parent_inode])
 
     def create(self, parent_inode, name, mode, flags, ctx=None):
-        """A basic implementation of th ``llfuse.Operations.create` method.
+        """A basic implementation of the `llfuse.Operations.create` method.
 
         This method uses `check_illegal_filename` and `get_file_class`.
 
@@ -162,10 +162,8 @@ class Operations(LlfuseOperations):
         logging.debug('create %s %s', parent_inode, name)
         parent = self.fs[parent_inode]
         name = os.fsdecode(name)
-
         if self.illegal_filename(name):
-            # Raise read only filesystem error when writing files without an
-            # extension and other temporary files
+            # Raise read only filesystem error for forbidden files
             logging.info('File called %s was not created', name)
             raise FUSEError(errno.EROFS)
 
@@ -189,3 +187,70 @@ class Operations(LlfuseOperations):
         default it returns `~.File`
         """
         return File
+
+    def read(self, fh, offset, length):
+        """A basic implementation of the `llfuse.Operations.read` method.
+
+        It reads bytes from the ``content`` attribute of the selected entry.
+        """
+        logging.debug('read %s %s %s', fh, offset, length)
+        return self.fs[fh].content[offset: offset + length]
+
+    def setattr(self, inode, attr, fields, fh, ctx=None):
+        """A basic implementation of the `llfuse.Operations.setattr` method.
+
+        It currently only supports changing the size of the file.
+        """
+        logging.debug('setattr %s %s %s', inode, attr, fields)
+        entry = self.getattr(inode)
+        if fields.update_size:
+            if entry.st_size < attr.st_size:
+                entry.content = + b'\0' * (attr.st_size - entry.st_size)
+            else:
+                entry.content = entry.content[:attr.st_size]
+
+        return entry
+
+    def write(self, inode, offset, buf):
+        """A basic implementation of the `llfuse.Operations.write` method."""
+        logging.debug('write')
+
+        file = self.fs[inode]
+        original = file.content
+
+        file.content = original[:offset] + buf + original[offset + len(buf):]
+        file.update_modified()
+        file.save()
+        return len(buf)
+
+    def unlink(self, parent_inode, name, ctx=None):
+        """A basic implementation of the `llfuse.Operations.unlink` method.
+
+        This removes files.
+        """
+        logging.debug('unlink %s', name)
+        parent = self.fs[parent_inode]
+
+        name = os.fsdecode(name)
+        entry = parent.children[name]
+        inode = entry.inode
+
+        entry.delete()
+        del self.fs[inode]
+        del parent.children[name]
+
+    def rmdir(self, parent_inode, name, ctx=None):
+        logging.debug('rmdir')
+
+        parent = self.fs[parent_inode]
+
+        name = os.fsdecode(name)
+        entry = parent.children[name]
+        inode = entry.inode
+
+        if entry.children:
+            raise FUSEError(errno.ENOTEMPTY)
+
+        entry.delete()
+        del self.fs[inode]
+        del parent.children[name]

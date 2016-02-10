@@ -140,15 +140,55 @@ class BaseEntry(EntryAttributes):
         """
         return len(self.parents)
 
+    def delete(self):
+        """Dummy delete method.
+
+        Override this when code needs to be executed on deletion.
+        """
+        logging.info('Deleting %s', self.path)
+
+    def save(self):
+        """Dummy save method.
+
+        Override this when code needs to be executed when a file is saved.
+        """
+        logging.info('Saving %s', self.path)
+
 
 class File(BaseEntry):
-    """A class that represents a filesystem directory."""
+    """A class that represents a filesystem file."""
 
     def __init__(self, *args, **kwargs):
+        """
+        Args
+        ----
+        *args and **kwargs:
+            Arguments that are passed to the initialization of `BaseEntry`.
+        """
+
         super().__init__(*args, **kwargs)
-        self.st_size = 0
 
         self.st_mode |= stat.S_IFREG
+
+        self.content = b''
+
+
+class LazyFile(File):
+    """A class that represents a file that has lazy content loading.
+
+    If a file is supposed to be synced, set the ``content`` attribute to `None`
+    after initialization.
+    """
+
+    @property
+    def content(self):
+        if self._content is None:
+            self.refresh_content()
+        return self._content
+
+    @content.setter
+    def content(self, value):
+        self._content = value
 
 
 class Directory(BaseEntry):
