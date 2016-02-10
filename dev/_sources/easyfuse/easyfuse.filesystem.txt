@@ -1,0 +1,4 @@
+.. automodule:: easyfuse.filesystem
+    :members:
+    :undoc-members:
+    :show-inheritance:

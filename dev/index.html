@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Welcome to easyfuse’s documentation! &mdash; easyfuse 0.0.1 documentation</title>
+  <title>easyfuse &mdash; easyfuse 0.0.1 documentation</title>
   
 
   
@@ -30,7 +30,8 @@
   
 
   
-    <link rel="top" title="easyfuse 0.0.1 documentation" href="#"/> 
+    <link rel="top" title="easyfuse 0.0.1 documentation" href="#"/>
+        <link rel="next" title="Library usage" href="usage.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -79,7 +80,11 @@
           
             
             
-                <ul class="simple">
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Library usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">How to contribute</a></li>
 </ul>
 
             
@@ -110,7 +115,7 @@
   <ul class="wy-breadcrumbs">
     <li><a href="#">Docs</a> &raquo;</li>
       
-    <li>Welcome to easyfuse&#8217;s documentation!</li>
+    <li>easyfuse</li>
     <li class="wy-breadcrumbs-aside">
       
         
@@ -124,27 +129,68 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="welcome-to-easyfuse-s-documentation">
-<h1>Welcome to easyfuse&#8217;s documentation!<a class="headerlink" href="#welcome-to-easyfuse-s-documentation" title="Permalink to this headline">¶</a></h1>
-<p>Contents:</p>
+  <div class="section" id="easyfuse">
+<h1>easyfuse<a class="headerlink" href="#easyfuse" title="Permalink to this headline">¶</a></h1>
+<p>Easyfuse is a Python library to allow easy mapping from filesystem operations
+to any backend. My initial use case was to edit dokuwiki pages and add
+attachements from the command line.</p>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>Before installing the library itself be sure to install the system
+dependencies. For Ubuntu these should be enough:</p>
+<dl class="docutils">
+<dt>::</dt>
+<dd>sudo apt-get install libattr1-dev libfuse-dev
+# Python 2 developement headers
+sudo apt-get install python-dev
+# Python 3 developement headers
+sudo apt-get install python3-dev</dd>
+</dl>
+<p>PyLaTeX works on Python 2.7 and 3.3+ and it is simply installed using pip:</p>
+<div class="highlight-bash"><div class="highlight"><pre>pip install easyfuse
+</pre></div>
+</div>
+</div>
+<div class="section" id="support">
+<h2>Support<a class="headerlink" href="#support" title="Permalink to this headline">¶</a></h2>
+<p>This library is being developed in and for Python 3. Because of a conversion
+script the current version also works in Python 2.7. For future versions, no
+such promise will be made. Python 3 features that are useful but incompatible
+with Python 2 will be used. If you find a bug for Python 2 and it is fixable
+without ugly hacks feel free to send a pull request.</p>
+<p>This library is developed for Linux. I have no intention to write fixes or test
+for platform specific bugs with every update, especially since I have no other
+operating systems to test it on. Pull requests that fix those issues are always
+welcome though.</p>
+</div>
+<div class="section" id="contributing">
+<h2>Contributing<a class="headerlink" href="#contributing" title="Permalink to this headline">¶</a></h2>
+<p>Read the <a class="reference internal" href="contributing.html"><span class="doc">How to contribute</span></a> page for tips and rules when you want to
+contribute. To just see the source code, you should go to the <a class="reference external" href="https://github.com/JelteF/easyfuse/">Github
+repository</a>.</p>
 <div class="toctree-wrapper compound">
-<ul class="simple">
-</ul>
 </div>
 </div>
-<div class="section" id="indices-and-tables">
-<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="indices">
+<h2>Indices<a class="headerlink" href="#indices" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
 <li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
-<li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
 </ul>
+</div>
 </div>
 
 
            </div>
           </div>
           <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="usage.html" class="btn btn-neutral float-right" title="Library usage" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+    </div>
   
 
   <hr/>

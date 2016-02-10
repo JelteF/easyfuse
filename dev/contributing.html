@@ -1,0 +1,299 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>How to contribute &mdash; easyfuse 0.0.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="easyfuse 0.0.1 documentation" href="index.html"/>
+        <link rel="prev" title="Change Log" href="changelog.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> easyfuse
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Library usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Change Log</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">How to contribute</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#setting-up-the-development-environment">Setting up the development environment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#os-specific-dependencies">OS specific dependencies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#getting-the-source-code">Getting the source code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#python-environment-setup">Python environment setup</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#some-tips-before-starting">Some tips before starting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#some-rules">Some rules</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">easyfuse</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>How to contribute</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        
+          <a href="_sources/contributing.txt" rel="nofollow"> View page source</a>
+        
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="how-to-contribute">
+<h1>How to contribute<a class="headerlink" href="#how-to-contribute" title="Permalink to this headline">¶</a></h1>
+<p>First of all, if anything is incorrect or something is missing on this page (or
+any other for that matter), please send in a pull request. It is important that
+setting up the development environment is as painless as possible.</p>
+<div class="section" id="setting-up-the-development-environment">
+<h2>Setting up the development environment<a class="headerlink" href="#setting-up-the-development-environment" title="Permalink to this headline">¶</a></h2>
+<p>Unfortunately there are quite some steps involved in setting up a development
+environment. If you don&#8217;t want to do this and know how Vagrant works, see the
+bottom of this section on how to use that instead.</p>
+<div class="section" id="os-specific-dependencies">
+<h3>OS specific dependencies<a class="headerlink" href="#os-specific-dependencies" title="Permalink to this headline">¶</a></h3>
+<p>Some dependencies are OS specific.</p>
+<p>For Ubuntu and other Debian based systems:</p>
+<div class="highlight-bash"><div class="highlight"><pre>sudo apt-get install python3 python3-dev virtualenv libattr1-dev libfuse-dev
+</pre></div>
+</div>
+</div>
+<div class="section" id="getting-the-source-code">
+<h3>Getting the source code<a class="headerlink" href="#getting-the-source-code" title="Permalink to this headline">¶</a></h3>
+<p>You need your own fork of the <a class="reference external" href="https://github.com/JelteF/easyfuse">Github repository</a> by using the Github fork button. You will
+then need to clone your version of the repo using the normal way, something
+like this:</p>
+<div class="highlight-bash"><div class="highlight"><pre>git clone git@github.com:YourUserName/easyfuse
+<span class="nb">cd</span> easyfuse
+</pre></div>
+</div>
+<p>Make your own branch for your specific feature or fix (don&#8217;t do this just on
+master):</p>
+<div class="highlight-bash"><div class="highlight"><pre>git checkout -b your-nice-feature
+</pre></div>
+</div>
+</div>
+<div class="section" id="python-environment-setup">
+<h3>Python environment setup<a class="headerlink" href="#python-environment-setup" title="Permalink to this headline">¶</a></h3>
+<p>This method will use a virtual environment, this is the easiest way to get all
+the dependencies.</p>
+<ol class="arabic">
+<li><p class="first">Create a virtualenv by running:</p>
+<div class="highlight-bash"><div class="highlight"><pre>virtualenv venv -p python3
+</pre></div>
+</div>
+</li>
+<li><p class="first">Activate it by running (you should do this whenever you start working on
+your changes):</p>
+<div class="highlight-bash"><div class="highlight"><pre>. venv bin activate
+</pre></div>
+</div>
+</li>
+<li><p class="first">Install all the development dependencies inside the virtual environment by
+running:</p>
+<div class="highlight-bash"><div class="highlight"><pre>pip install -r dev_requirements.txt
+</pre></div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div class="section" id="some-tips-before-starting">
+<h2>Some tips before starting<a class="headerlink" href="#some-tips-before-starting" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li>To learn how to squash commits, read this <a class="reference external" href="http://gitready.com/advanced/2009/02/10/squashing-commits-with-rebase.html">blog</a>.
+Ignore the word of caution, since that only applies to main repositories on
+which people base their own work.  You can do this when you have a couple of
+commits that could be merged together. This mostly happens when you have
+commits that fix a typo or bug you made in a pull request and you fix that
+in a new commit.</li>
+</ol>
+</div>
+<div class="section" id="some-rules">
+<h2>Some rules<a class="headerlink" href="#some-rules" title="Permalink to this headline">¶</a></h2>
+<p>There are two things that are needed for every pull request:</p>
+<ol class="arabic simple">
+<li>Run the <code class="docutils literal"><span class="pre">testall.sh</span></code> script before making a pull request to check if you
+didn&#8217;t break anything.</li>
+<li>Follow the <strong>PEP8</strong> style guide and make sure it passes pyflakes (this is
+also tested with the <code class="docutils literal"><span class="pre">testall.sh</span></code> script).</li>
+</ol>
+<p>These are also tested for by Travis, but please test them yourself as well.</p>
+<p>Depending on your type of changes some other things are needed as well.</p>
+<ol class="arabic simple">
+<li>Change docstrings when necessary. For instance when adding new arguments or
+changing behaviour.</li>
+<li>If your change is user facing, add it to the <strong>changelog</strong> so it will be
+mentioned in the next release. Its location is at
+<code class="docutils literal"><span class="pre">docs/source/changelog.rst</span></code>.</li>
+</ol>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="changelog.html" class="btn btn-neutral" title="Change Log" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Jelte Fennema.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
