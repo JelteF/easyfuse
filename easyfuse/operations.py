@@ -12,7 +12,7 @@ import logging
 import errno
 import os
 
-from .filesystem import Directory
+from .filesystem import Directory, File
 
 
 class Operations(LlfuseOperations):
@@ -145,6 +145,47 @@ class Operations(LlfuseOperations):
         return inode
 
     def mkdir(self, parent_inode, name, mode, ctx):
+        """A basic implementation of the `llfuse.Operations.mkdir` method.
+
+        It uses the ``dir_class`` argument passed to ``__init__``.
+        """
         logging.debug('mkdir %s', name)
         return self.dir_class(os.fsdecode(name), self.fs,
                               self.fs[parent_inode])
+
+    def create(self, parent_inode, name, mode, flags, ctx=None):
+        """Create file
+
+        This method uses `check_illegal_filename` and `get_file_class`.
+
+        """
+        logging.debug('create %s %s', parent_inode, name)
+        parent = self.fs[parent_inode]
+        name = os.fsdecode(name)
+
+        if self.illegal_filename(name):
+            # Raise read only filesystem error when writing files without an
+            # extension and other temporary files
+            logging.info('File called %s was not created', name)
+            raise FUSEError(errno.EROFS)
+
+        file_class = self.get_file_class(name)
+        entry = file_class(name, self.fs, parent)
+
+        return (entry.inode, entry)
+
+    def illegal_filename(self, name):
+        """Return True if filename is illegal.
+
+        By default all filenames are accepted. This method should be overridden
+        when this is not the case.
+        """
+        return False
+
+    def get_file_class(self, name):
+        """Return the correct file class based on the filename.
+
+        This can be used to use different clasess for different filenames. By
+        default it returns `~.File`
+        """
+        return File
