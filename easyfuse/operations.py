@@ -118,3 +118,28 @@ class Operations(LlfuseOperations):
         except KeyError:
             logging.debug('not found')
             raise FUSEError(errno.ENOENT)
+
+    def access(self, inode, mode, ctx=None):
+        """Let everybody access everything.
+
+        TODO: Maybe implement access rights.
+        """
+        logging.debug('access %s', self.fs[inode])
+        return True
+
+    def opendir(self, inode, ctx=None):
+        """Return a filehandler equal to the requested inode.
+
+        TODO: Count accesses
+        """
+        logging.debug('opendir %s', inode)
+        return inode
+
+    def open(self, inode, flags, ctx=None):
+        """Return a filehandler equal to the inode.
+
+        TODO: Count accesses
+        TODO: Decide if something needs to be done with the flags
+        """
+        logging.debug('open %s %s %s', self.fs[inode], flags)
+        return inode
