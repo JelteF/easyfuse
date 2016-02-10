@@ -94,6 +94,7 @@ class BaseEntry(EntryAttributes):
         return inode
 
     def update_modified(self):
+        """Update the modified time to the current time."""
         self.modified = time.time()
 
     @property
@@ -121,6 +122,8 @@ class File(BaseEntry):
 class Directory(BaseEntry):
     """A class that represents a directory in the filesystem."""
 
+    _children = None
+
     def __init__(self, *args, **kwargs):
         """
         Args
@@ -134,3 +137,19 @@ class Directory(BaseEntry):
         # mode = drwxr-xr-x
         self.st_mode |= stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH | \
             stat.S_IFDIR
+
+    @property
+    def children(self):
+        """A `dict` of the children of the directory."""
+        if self._children is None:
+            self.refresh_children()
+        return self._children
+
+    def refresh_children(self):
+        """Initialize children as an empty `dict`.
+
+        This method should be overloaded by every implementing class, since the
+        actual children should obviously be added as well.
+        This method should still be called using `super` though.
+        """
+        self._children = {}
