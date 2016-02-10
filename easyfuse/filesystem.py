@@ -16,7 +16,7 @@ import logging
 class BaseEntry(EntryAttributes):
     """The base class that all filesystem classes should subclass."""
 
-    _prints = ('inode', )
+    _prints = ('name', 'inode', )
 
     def __init__(self, name, fs, parent, *, inode=None):
         """
@@ -70,7 +70,7 @@ class BaseEntry(EntryAttributes):
             parent._children[self.name] = self
 
     def __repr__(self):
-        string = '%s(' % self.__class__.__name__
+        string = '<%s(' % self.__class__.__name__
         for i, attr in enumerate(self._prints):
             if i:
                 string += ', '
@@ -78,7 +78,7 @@ class BaseEntry(EntryAttributes):
         string += ', '
         string += stat.filemode(self.st_mode)
 
-        string += ')'
+        string += ')>'
         return string
 
     def generate_inode_number(self):
