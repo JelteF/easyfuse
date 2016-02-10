@@ -16,7 +16,7 @@ import logging
 class BaseEntry(EntryAttributes):
     """The base class that all filesystem classes should subclass."""
 
-    _prints = ('name', 'inode', )
+    _prints = ('path', 'inode', )
 
     @property
     def inode(self):
@@ -120,6 +120,26 @@ class BaseEntry(EntryAttributes):
         self.st_ctime_ns = value
         self.st_mtime_ns = value
 
+    @property
+    def path(self):
+        """The full path of this entry from the mount directory."""
+        return '/'.join([p.name for p in self.parents] + [self.name])
+
+    @property
+    def parents(self):
+        """Recursively get the parents of this entry."""
+        if self.parent is None:
+            return []
+        return self.parent.parents + [self.parent]
+
+    @property
+    def depth(self):
+        """The depth of the entry in the directory tree.
+
+        This basically counts the number of parents this entry has.
+        """
+        return len(self.parents)
+
 
 class File(BaseEntry):
     """A class that represents a filesystem directory."""
@@ -165,3 +185,8 @@ class Directory(BaseEntry):
         This method should still be called using `super` though.
         """
         self._children = {}
+
+    @property
+    def path(self):
+        """The full path of this directory from the mount directory."""
+        return super().path + '/'
