@@ -18,6 +18,15 @@ class BaseEntry(EntryAttributes):
 
     _prints = ('name', 'inode', )
 
+    @property
+    def inode(self):
+        """Alias for `st_ino` with a clearer name"""
+        return self.st_ino
+
+    @inode.setter
+    def inode(self, value):
+        self.st_ino = value
+
     def __init__(self, name, fs, parent, *, inode=None):
         """
         Args
