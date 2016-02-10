@@ -35,7 +35,7 @@ class Operations(LlfuseOperations):
 
         filesystem: `dict` or dictlike
             This stores the mapping from an inode number to a `~.File` or
-            `~.Directory` object. It defaults to `{}` as this is fine in most
+            `~.Directory` object. It defaults to ``{}`` as this is fine in most
             cases. For performance a class could be used  that has a dict like
             interface to another storage option, such as a database.
 
@@ -156,7 +156,7 @@ class Operations(LlfuseOperations):
     def create(self, parent_inode, name, mode, flags, ctx=None):
         """A basic implementation of the `llfuse.Operations.create` method.
 
-        This method uses `check_illegal_filename` and `get_file_class`.
+        This method uses `illegal_filename` and `get_file_class`.
 
         """
         logging.debug('create %s %s', parent_inode, name)

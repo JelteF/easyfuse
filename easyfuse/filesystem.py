@@ -159,11 +159,15 @@ class File(BaseEntry):
     """A class that represents a filesystem file."""
 
     def __init__(self, *args, **kwargs):
-        """
+        r"""
         Args
         ----
-        *args and **kwargs:
-            Arguments that are passed to the initialization of `BaseEntry`.
+        \*args:
+            Positional arguments that are passed to the initialization of
+            `BaseEntry`.
+        \*\*kwargs:
+            Keyword arguments that are passed to the initialization of
+            `BaseEntry`.
         """
 
         super().__init__(*args, **kwargs)
@@ -197,11 +201,15 @@ class Directory(BaseEntry):
     _children = None
 
     def __init__(self, *args, **kwargs):
-        """
+        r"""
         Args
         ----
-        *args and **kwargs:
-            Arguments that are passed to the initialization of `BaseEntry`.
+        \*args:
+            Positional arguments that are passed to the initialization of
+            `BaseEntry`.
+        \*\*kwargs:
+            Keyword arguments that are passed to the initialization of
+            `BaseEntry`.
         """
 
         super().__init__(*args, **kwargs)

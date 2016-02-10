@@ -63,3 +63,8 @@ target/
 
 #Ipython Notebook
 .ipynb_checkpoints
+
+# Compiled doc files
+/docs/easyfuse/
+/docs/gh-pages/
+/docs/_build/
