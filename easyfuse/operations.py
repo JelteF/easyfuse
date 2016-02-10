@@ -16,7 +16,7 @@ from .filesystem import Directory
 
 
 class Operations(LlfuseOperations):
-    """The class that implements all file operations.i
+    """The class that implements all file operations.
 
     Full descriptions of what the operations should do are shown at the
     `llfuse.Operations` documentation.
@@ -73,15 +73,48 @@ class Operations(LlfuseOperations):
         """A basic implementation `llfuse.Operations.readdir` method."""
         logging.debug('readdir %s %s', fh, offset)
         directory = self.getattr(fh)
+        parent = directory.parent
+
+        if parent is None:
+            # For the ROOT_INODE the parent is itself, this seems to work for
+            # some weird reason.
+            parent = directory
+
         special_entries = []
         if directory.inode > offset:
             special_entries.append((os.fsencode('.'),
                                     directory,
                                     directory.inode))
-        # TODO: Add a .. entry as well.
+        if parent and parent.inode > offset:
+            special_entries.append((os.fsencode('..'),
+                                    parent,
+                                    parent.inode))
+
         entries = [(os.fsencode(c.name), c, c.inode) for c in
                    directory.children.values() if c.inode > offset]
         entries += special_entries
         entries = sorted(entries, key=lambda x: x[2])
 
         return entries
+
+    def lookup(self, parent_inode, name, ctx=None):
+        """A basic implementation `llfuse.Operations.lookup` method.
+
+        This currently does not do anything special for the
+        `~llfuse.ROOT_INODE`, but it seems to work anyway.
+        """
+        logging.debug('lookup %s', name)
+
+        name = os.fsdecode(name)
+        parent = self.fs[parent_inode]
+
+        if name == '.':
+            return parent
+        if name == '..':
+            return parent.parent
+
+        try:
+            return parent.children[name].inode
+        except KeyError:
+            logging.debug('not found')
+            raise FUSEError(errno.ENOENT)

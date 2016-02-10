@@ -67,7 +67,7 @@ class BaseEntry(EntryAttributes):
         self.fs[self.inode] = self
 
         if parent is not None:
-            parent._children[self.name] = self
+            parent.children[self.name] = self
 
     def __repr__(self):
         string = '<%s(' % self.__class__.__name__
