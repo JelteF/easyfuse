@@ -114,7 +114,7 @@ class Operations(LlfuseOperations):
             return parent.parent
 
         try:
-            return parent.children[name].inode
+            return parent.children[name]
         except KeyError:
             logging.debug('not found')
             raise FUSEError(errno.ENOENT)
