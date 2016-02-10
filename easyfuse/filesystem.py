@@ -20,7 +20,10 @@ class BaseEntry(EntryAttributes):
 
     @property
     def inode(self):
-        """Alias for `st_ino` with a clearer name"""
+        """The inode number.
+
+        This is simply an alias for `st_ino` with a clearer name.
+        """
         return self.st_ino
 
     @inode.setter

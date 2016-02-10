@@ -154,7 +154,7 @@ class Operations(LlfuseOperations):
                               self.fs[parent_inode])
 
     def create(self, parent_inode, name, mode, flags, ctx=None):
-        """Create file
+        """A basic implementation of th ``llfuse.Operations.create` method.
 
         This method uses `check_illegal_filename` and `get_file_class`.
 
