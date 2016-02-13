@@ -259,3 +259,4 @@ class Operations(LlfuseOperations):
         file = self.fs[fh]
         if file.dirty:
             file.save()
+            file.dirty = False
