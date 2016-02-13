@@ -220,7 +220,6 @@ class Operations(LlfuseOperations):
 
         file.content = original[:offset] + buf + original[offset + len(buf):]
         file.update_modified()
-        file.save()
         return len(buf)
 
     def unlink(self, parent_inode, name, ctx=None):
@@ -254,3 +253,9 @@ class Operations(LlfuseOperations):
         entry.delete()
         del self.fs[inode]
         del parent.children[name]
+
+    def fsync(self, fh, datasync):
+        logging.debug('fsync %s %s', fh, datasync)
+        file = self.fs[fh]
+        if file.dirty:
+            file.save()

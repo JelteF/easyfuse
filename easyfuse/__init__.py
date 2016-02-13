@@ -6,4 +6,4 @@ A Python library to create a simple FUSE file system.
 """
 
 from .operations import Operations  # noqa
-from .filesystem import Directory, File, LazyFile, BaseEntry  # noqa
+from .filesystem import Directory, File, BaseEntry  # noqa

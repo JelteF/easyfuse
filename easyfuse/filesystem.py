@@ -18,6 +18,8 @@ class BaseEntry(EntryAttributes):
 
     _prints = ('path', 'inode', )
 
+    dirty = False
+
     @property
     def inode(self):
         """The inode number.
@@ -156,7 +158,11 @@ class BaseEntry(EntryAttributes):
 
 
 class File(BaseEntry):
-    """A class that represents a filesystem file."""
+    """A class that represents a filesystem file.
+
+    If a file is supposed to be synced, set the ``content`` attribute to `None`
+    after initialization.
+    """
 
     def __init__(self, *args, **kwargs):
         r"""
@@ -176,14 +182,6 @@ class File(BaseEntry):
 
         self.content = b''
 
-
-class LazyFile(File):
-    """A class that represents a file that has lazy content loading.
-
-    If a file is supposed to be synced, set the ``content`` attribute to `None`
-    after initialization.
-    """
-
     @property
     def content(self):
         if self._content is None:
@@ -192,6 +190,7 @@ class LazyFile(File):
 
     @content.setter
     def content(self, value):
+        self.dirty = value is not None
         self._content = value
 
 
