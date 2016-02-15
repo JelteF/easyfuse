@@ -84,4 +84,4 @@ Depending on your type of changes some other things are needed as well.
    changing behaviour.
 2. If your change is user facing, add it to the **changelog** so it will be
    mentioned in the next release. Its location is at
-   ``docs/source/changelog.rst``.
+   ``docs/changelog.rst``.
