@@ -14,6 +14,10 @@ import os
 
 from .filesystem import Directory, File
 
+# Shows possibly occuring segfaults since llfuse uses the Cython
+import faulthandler
+faulthandler.enable()
+
 
 class Operations(LlfuseOperations):
     """The class that implements all file operations.
