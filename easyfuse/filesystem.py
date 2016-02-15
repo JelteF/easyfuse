@@ -18,7 +18,7 @@ class BaseEntry(EntryAttributes):
 
     _prints = ('path', 'inode', )
 
-    dirty = False
+    _dirty = False
 
     @property
     def inode(self):
@@ -156,6 +156,21 @@ class BaseEntry(EntryAttributes):
         """
         logging.info('Saving %s', self.path)
 
+    @property
+    def dirty(self):
+        return self._dirty
+
+    @dirty.setter
+    def dirty(self, value):
+        self._dirty = value
+        if value is True and self.parent is not None:
+            self.parent.dirty_children = True
+
+    def fsync(self):
+        if self.dirty:
+            self.save()
+            self.dirty = False
+
 
 class File(BaseEntry):
     """A class that represents a filesystem file.
@@ -198,6 +213,7 @@ class Directory(BaseEntry):
     """A class that represents a directory in the filesystem."""
 
     _children = None
+    _dirty_children = False
 
     def __init__(self, *args, **kwargs):
         r"""
@@ -237,3 +253,22 @@ class Directory(BaseEntry):
     def path(self):
         """The full path of this directory from the mount directory."""
         return super().path + '/'
+
+    def fsync(self):
+        super().fsync()
+
+        if self.dirty_children:
+            for c in self.children.values():
+                c.fsync()
+
+            self.dirty_children = False
+
+    @property
+    def dirty_children(self):
+        return self._dirty_children
+
+    @dirty_children.setter
+    def dirty_children(self, value):
+        self._dirty_children = value
+        if value is True and self.parent is not None:
+            self.parent.dirty_children = True

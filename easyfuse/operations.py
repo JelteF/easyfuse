@@ -256,7 +256,8 @@ class Operations(LlfuseOperations):
 
     def fsync(self, fh, datasync):
         logging.debug('fsync %s %s', fh, datasync)
-        file = self.fs[fh]
-        if file.dirty:
-            file.save()
-            file.dirty = False
+        self.fs[fh].fsync()
+
+    def fsyncdir(self, fh, datasync):
+        logging.debug('fsyncdir %s %s', fh, datasync)
+        self.fs[fh].fsync()
