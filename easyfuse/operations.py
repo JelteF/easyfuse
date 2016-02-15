@@ -11,6 +11,7 @@ from llfuse import ROOT_INODE, FUSEError
 import logging
 import errno
 import os
+import threading
 
 from .filesystem import Directory, File
 
@@ -29,7 +30,8 @@ class Operations(LlfuseOperations):
     same.
     """
 
-    def __init__(self, dir_class=Directory, filesystem=None, *args, **kwargs):
+    def __init__(self, dir_class=Directory, filesystem=None, *args,
+                 autosync_delay=3, **kwargs):
         """
         Args
         ----
@@ -43,6 +45,10 @@ class Operations(LlfuseOperations):
             cases. For performance a class could be used  that has a dict like
             interface to another storage option, such as a database.
 
+        autosync_delay: `int` or `float`
+            Automatically sync all dirty files after no `~.write` has occured
+            for this amount of seconds. If this is set to `None`, autosync will
+            be disabled.
         """
 
         super().__init__(*args, **kwargs)
@@ -52,8 +58,34 @@ class Operations(LlfuseOperations):
 
         self.fs = filesystem
         self.dir_class = dir_class
+        self.autosync_delay = autosync_delay
 
         self.dir_class('', filesystem, None, inode=ROOT_INODE)
+
+    _autosync_timer = None
+
+    def fullsync(self):
+        """Sync all dirty files using `~.fsync`."""
+        self.fsyncdir(ROOT_INODE, True)
+        self._autosync_timer = None
+
+    def start_autosync_timer(self):
+        """Start an autosync timer and cancel previously enabled ones.
+
+        This is done by calling `~.fsyncdir` on the `llfuse.ROOT_INODE`.
+        """
+        if self.autosync_delay is not None:
+            # TODO: Do some locking
+            self.cancel_autosync_timer()
+            self._autosync_timer = threading.Timer(self.autosync_delay,
+                                                   self.fullsync)
+            self._autosync_timer.start()
+
+    def cancel_autosync_timer(self):
+        """Cancel a possibly initiated autosync timer."""
+        if self._autosync_timer is not None:
+            self._autosync_timer.cancel()
+            self._autosync_timer = None
 
     def getattr(self, inode, ctx=None):
         """Basic gettatr method.
@@ -218,12 +250,14 @@ class Operations(LlfuseOperations):
     def write(self, inode, offset, buf):
         """A basic implementation of the `llfuse.Operations.write` method."""
         logging.debug('write')
-
+        self.cancel_autosync_timer()
         file = self.fs[inode]
         original = file.content
 
         file.content = original[:offset] + buf + original[offset + len(buf):]
         file.update_modified()
+
+        self.start_autosync_timer()
         return len(buf)
 
     def unlink(self, parent_inode, name, ctx=None):
