@@ -14,6 +14,7 @@ import os
 import threading
 
 from .filesystem import Directory, File
+from .utils import _convert_error_to_fuse_error
 
 # Shows possibly occuring segfaults since llfuse uses the Cython
 import faulthandler
@@ -272,7 +273,8 @@ class Operations(LlfuseOperations):
         entry = parent.children[name]
         inode = entry.inode
 
-        entry.delete()
+        with _convert_error_to_fuse_error('deleting', entry.path):
+            entry.delete()
         del self.fs[inode]
         del parent.children[name]
 
@@ -288,7 +290,8 @@ class Operations(LlfuseOperations):
         if entry.children:
             raise FUSEError(errno.ENOTEMPTY)
 
-        entry.delete()
+        with _ignore_but_log():
+            entry.delete()
         del self.fs[inode]
         del parent.children[name]
 

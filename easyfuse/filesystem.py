@@ -11,6 +11,7 @@ import stat
 import time
 
 import logging
+from .utils import _convert_error_to_fuse_error
 
 
 class BaseEntry(EntryAttributes):
@@ -168,7 +169,8 @@ class BaseEntry(EntryAttributes):
 
     def fsync(self):
         if self.dirty:
-            self.save()
+            with _convert_error_to_fuse_error('saving', self.path):
+                self.save()
             self.dirty = False
 
 
@@ -200,7 +202,9 @@ class File(BaseEntry):
     @property
     def content(self):
         if self._content is None:
-            self.refresh_content()
+            with _convert_error_to_fuse_error('refreshing content of',
+                                              self.path):
+                self.refresh_content()
         return self._content
 
     @content.setter
@@ -237,7 +241,9 @@ class Directory(BaseEntry):
     def children(self):
         """A `dict` of the children of the directory."""
         if self._children is None:
-            self.refresh_children()
+            with _convert_error_to_fuse_error('refreshing children of',
+                                              self.path):
+                self.refresh_children()
         return self._children
 
     def refresh_children(self):
