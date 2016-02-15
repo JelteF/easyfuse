@@ -212,6 +212,9 @@ class File(BaseEntry):
         self.dirty = value is not None
         self._content = value
 
+        if value is not None:
+            self.st_size = len(self._content)
+
 
 class Directory(BaseEntry):
     """A class that represents a directory in the filesystem."""
