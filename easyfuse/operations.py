@@ -279,6 +279,7 @@ class Operations(LlfuseOperations):
         del parent.children[name]
 
     def rmdir(self, parent_inode, name, ctx=None):
+        """A basic implementation of the `llfuse.Operations.rmdir` method."""
         logging.debug('rmdir')
 
         parent = self.fs[parent_inode]
@@ -290,15 +291,17 @@ class Operations(LlfuseOperations):
         if entry.children:
             raise FUSEError(errno.ENOTEMPTY)
 
-        with _ignore_but_log():
+        with _convert_error_to_fuse_error():
             entry.delete()
         del self.fs[inode]
         del parent.children[name]
 
     def fsync(self, fh, datasync):
+        """A basic implementation of the `llfuse.Operations.fsync` method."""
         logging.debug('fsync %s %s', fh, datasync)
         self.fs[fh].fsync()
 
     def fsyncdir(self, fh, datasync):
+        """Same as `~.fsyncdir` but for directories."""
         logging.debug('fsyncdir %s %s', fh, datasync)
         self.fs[fh].fsync()
