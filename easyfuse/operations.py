@@ -146,15 +146,18 @@ class Operations(LlfuseOperations):
         parent = self.fs[parent_inode]
 
         if name == '.':
-            return parent
-        if name == '..':
-            return parent.parent
+            entry = parent
+        elif name == '..':
+            entry = parent.parent
+        else:
+            try:
+                entry = parent.children[name]
+            except KeyError:
+                logging.debug('not found')
+                raise FUSEError(errno.ENOENT)
 
-        try:
-            return parent.children[name]
-        except KeyError:
-            logging.debug('not found')
-            raise FUSEError(errno.ENOENT)
+        entry.lookup_count += 1
+        return entry
 
     def access(self, inode, mode, ctx=None):
         """Let everybody access everything.
@@ -165,20 +168,16 @@ class Operations(LlfuseOperations):
         return True
 
     def opendir(self, inode, ctx=None):
-        """Return a filehandler equal to the requested inode.
-
-        TODO: Count accesses
-        """
+        """Return a filehandler equal to the requested inode."""
         logging.debug('opendir %s', inode)
         return inode
 
     def open(self, inode, flags, ctx=None):
         """Return a filehandler equal to the inode.
 
-        TODO: Count accesses
         TODO: Decide if something needs to be done with the flags
         """
-        logging.debug('open %s %s %s', self.fs[inode], flags)
+        logging.debug('open %s %s', self.fs[inode], flags)
         return inode
 
     def mkdir(self, parent_inode, name, mode, ctx):
@@ -187,8 +186,10 @@ class Operations(LlfuseOperations):
         It uses the ``dir_class`` argument passed to ``__init__``.
         """
         logging.debug('mkdir %s', name)
-        return self.dir_class(os.fsdecode(name), self.fs,
-                              self.fs[parent_inode])
+        entry = self.dir_class(os.fsdecode(name), self.fs,
+                               self.fs[parent_inode])
+        entry.lookup_count += 1
+        return entry
 
     def create(self, parent_inode, name, mode, flags, ctx=None):
         """A basic implementation of the `llfuse.Operations.create` method.
@@ -207,6 +208,7 @@ class Operations(LlfuseOperations):
         file_class = self.get_file_class(name)
         entry = file_class(name, self.fs, parent)
 
+        entry.lookup_count += 1
         return (entry.inode, entry)
 
     def illegal_filename(self, name):
@@ -275,8 +277,11 @@ class Operations(LlfuseOperations):
 
         with _convert_error_to_fuse_error('deleting', entry.path):
             entry.delete()
-        del self.fs[inode]
+
         del parent.children[name]
+
+        if entry.lookup_count == 0:
+            del self.fs[inode]
 
     def rmdir(self, parent_inode, name, ctx=None):
         """A basic implementation of the `llfuse.Operations.rmdir` method."""
@@ -293,8 +298,11 @@ class Operations(LlfuseOperations):
 
         with _convert_error_to_fuse_error():
             entry.delete()
-        del self.fs[inode]
+
         del parent.children[name]
+
+        if entry.lookup_count == 0:
+            del self.fs[inode]
 
     def fsync(self, fh, datasync):
         """A basic implementation of the `llfuse.Operations.fsync` method."""
@@ -305,3 +313,13 @@ class Operations(LlfuseOperations):
         """Same as `~.fsyncdir` but for directories."""
         logging.debug('fsyncdir %s %s', fh, datasync)
         self.fs[fh].fsync()
+
+    def forget(self, inode_list):
+        """A basic implementation of the `llfuse.Operations.forget` method."""
+        logging.debug('forget %s', inode_list)
+
+        for inode, nlookup in inode_list:
+            entry = self.fs[inode]
+            entry.lookup_count -= nlookup
+            if entry.lookup_count == 0 and entry.deleted:
+                del self.fs[inode]

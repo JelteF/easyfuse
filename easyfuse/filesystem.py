@@ -21,6 +21,9 @@ class BaseEntry(EntryAttributes):
 
     _dirty = False
 
+    lookup_count = 0
+    deleted = False
+
     @property
     def inode(self):
         """The inode number.
@@ -149,6 +152,7 @@ class BaseEntry(EntryAttributes):
         Override this when code needs to be executed on deletion.
         """
         logging.info('Deleting %s', self.path)
+        self.deleted = True
 
     def save(self):
         """Dummy save method.
