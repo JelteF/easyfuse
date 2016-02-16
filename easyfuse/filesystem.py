@@ -22,20 +22,20 @@ class BaseEntry(EntryAttributes):
     actually implemented currently.
     """
 
-    def __init__(self, name, fs, parent, *, inode=None):
+    def __init__(self, name, parent, *, fs=None, inode=None):
         """
         Args
         ----
         name: str
             The name of the entry.
+        parent: `~.Directory`
+            The filesystem parent of this entry.
+
         fs: `dict` or dictlike
             This stores the mapping from an inode number to a `~.File` or
             `~.Directory` object. The newly created `BaseEntry` will be added
-            to this as well. It should most likely be the ``fs`` attribute of
-            the instance that creates this entry.
-
-        parent: `~.Directory`
-            The filesystem parent of this
+            to this as well. If this is `None` the ``fs`` attribute of the
+            parent will be used.
         inode: int
             An explicit inode number. If it is `None` a new number will
             automatically be generated. Only in rare cases this automatic
@@ -50,8 +50,11 @@ class BaseEntry(EntryAttributes):
         super().__init__()
 
         self.name = name
-        self.fs = fs
         self.parent = parent
+        if fs is None:
+            self.fs = parent.fs
+        else:
+            self.fs = fs
 
         self.update_modified()
 

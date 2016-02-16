@@ -31,7 +31,7 @@ class Operations(LlfuseOperations):
     same.
     """
 
-    def __init__(self, dir_class=Directory, filesystem=None, *args,
+    def __init__(self, dir_class=Directory, fs=None, *args,
                  autosync_delay=3, **kwargs):
         """
         Args
@@ -40,7 +40,7 @@ class Operations(LlfuseOperations):
             The class that represents directories. This defaults to
             `~.Directory`.
 
-        filesystem: `dict` or dictlike
+        fs: `dict` or dictlike
             This stores the mapping from an inode number to a `~.File` or
             `~.Directory` object. It defaults to ``{}`` as this is fine in most
             cases. For performance a class could be used  that has a dict like
@@ -54,14 +54,14 @@ class Operations(LlfuseOperations):
 
         super().__init__(*args, **kwargs)
 
-        if filesystem is None:
-            filesystem = {}
+        if fs is None:
+            fs = {}
 
-        self.fs = filesystem
+        self.fs = fs
         self.dir_class = dir_class
         self.autosync_delay = autosync_delay
 
-        self.dir_class('', filesystem, None, inode=ROOT_INODE)
+        self.dir_class('', None, fs=fs, inode=ROOT_INODE)
 
     _autosync_timer = None
 
@@ -195,8 +195,7 @@ class Operations(LlfuseOperations):
         It uses the ``dir_class`` argument passed to ``__init__``.
         """
         logging.debug('mkdir %s', name)
-        entry = self.dir_class(os.fsdecode(name), self.fs,
-                               self.fs[parent_inode])
+        entry = self.dir_class(os.fsdecode(name), self.fs[parent_inode])
         entry.lookup_count += 1
         return entry
 
@@ -215,7 +214,7 @@ class Operations(LlfuseOperations):
             raise FUSEError(errno.EROFS)
 
         file_class = self.get_file_class(name)
-        entry = file_class(name, self.fs, parent)
+        entry = file_class(name, parent)
 
         entry.lookup_count += 1
         return (entry.inode, entry)
