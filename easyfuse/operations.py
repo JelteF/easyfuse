@@ -67,8 +67,14 @@ class Operations(LlfuseOperations):
 
     def fullsync(self):
         """Sync all dirty files using `~.fsync`."""
-        self.fsyncdir(ROOT_INODE, True)
+
         self._autosync_timer = None
+
+        fd = os.open(self.mountpoint, os.O_RDONLY)
+        try:
+            os.fsync(fd)
+        finally:
+            os.close(fd)
 
     def start_autosync_timer(self):
         """Start an autosync timer and cancel previously enabled ones.
@@ -95,7 +101,7 @@ class Operations(LlfuseOperations):
         `~.fullsync`.
         """
         self.cancel_autosync_timer()
-        self.fullsync()
+        self.fsyncdir(ROOT_INODE, True)
 
     def getattr(self, inode, ctx=None):
         """Basic gettatr method.
