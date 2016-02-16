@@ -228,6 +228,7 @@ class File(BaseEntry):
             with _convert_error_to_fuse_error('refreshing content of',
                                               self.path):
                 self.refresh_content()
+                self.dirty = False
         return self._content
 
     @content.setter
