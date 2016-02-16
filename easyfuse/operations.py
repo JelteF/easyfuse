@@ -60,6 +60,7 @@ class Operations(LlfuseOperations):
         self.fs = fs
         self.dir_class = dir_class
         self.autosync_delay = autosync_delay
+        self._autosync_lock = threading.RLock()
 
         self.dir_class('', None, fs=fs, inode=ROOT_INODE)
 
@@ -67,8 +68,6 @@ class Operations(LlfuseOperations):
 
     def fullsync(self):
         """Sync all dirty files using `~.fsync`."""
-
-        self._autosync_timer = None
 
         fd = os.open(self.mountpoint, os.O_RDONLY)
         try:
@@ -81,18 +80,18 @@ class Operations(LlfuseOperations):
 
         This is done by calling `~.fsyncdir` on the `llfuse.ROOT_INODE`.
         """
-        if self.autosync_delay is not None:
-            # TODO: Do some locking
-            self.cancel_autosync_timer()
-            self._autosync_timer = threading.Timer(self.autosync_delay,
-                                                   self.fullsync)
-            self._autosync_timer.start()
+        with self._autosync_lock:
+            if self.autosync_delay is not None:
+                self.cancel_autosync_timer()
+                self._autosync_timer = threading.Timer(self.autosync_delay,
+                                                       self.fullsync)
+                self._autosync_timer.start()
 
     def cancel_autosync_timer(self):
         """Cancel a possibly initiated autosync timer."""
-        if self._autosync_timer is not None:
-            self._autosync_timer.cancel()
-            self._autosync_timer = None
+        with self._autosync_lock:
+            if self._autosync_timer is not None:
+                self._autosync_timer.cancel()
 
     def destroy(self):
         """Execute all pending operations before unmount.
