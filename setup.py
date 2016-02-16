@@ -21,7 +21,8 @@ dependencies = ['llfuse']
 
 extras = {
     'docs': ['sphinx'],
-    'testing': ['flake8', 'pep8-naming', 'flake8_docstrings', 'nose'],
+    'testing': ['flake8', 'pep8-naming', 'flake8_docstrings', 'flake8-putty',
+                'nose'],
     'convert_to_py2': ['3to2', 'future'],
 }
 

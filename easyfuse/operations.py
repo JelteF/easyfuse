@@ -230,7 +230,8 @@ class Operations(LlfuseOperations):
     def read(self, fh, offset, length):
         """A basic implementation of the `llfuse.Operations.read` method.
 
-        It reads bytes from the ``content`` attribute of the selected entry.
+        It reads bytes from the `~.File.content` attribute of the selected
+        `~.File`.
         """
         logging.debug('read %s %s %s', fh, offset, length)
         return self.fs[fh].content[offset: offset + length]

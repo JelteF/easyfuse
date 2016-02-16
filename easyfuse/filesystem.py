@@ -15,26 +15,12 @@ from .utils import _convert_error_to_fuse_error
 
 
 class BaseEntry(EntryAttributes):
-    """The base class that all filesystem classes should subclass."""
+    """The base class that all filesystem classes should subclass.
 
-    _prints = ('path', 'inode', )
-
-    _dirty = False
-
-    lookup_count = 0
-    deleted = False
-
-    @property
-    def inode(self):
-        """The inode number.
-
-        This is simply an alias for `st_ino` with a clearer name.
-        """
-        return self.st_ino
-
-    @inode.setter
-    def inode(self, value):
-        self.st_ino = value
+    This is a subclass `llfuse.EntryAttributes` and its attributes that are
+    required to have a working filesystem are implemented. Most others are not
+    actually implemented currently.
+    """
 
     def __init__(self, name, fs, parent, *, inode=None):
         """
@@ -46,7 +32,7 @@ class BaseEntry(EntryAttributes):
             This stores the mapping from an inode number to a `~.File` or
             `~.Directory` object. The newly created `BaseEntry` will be added
             to this as well. It should most likely be the ``fs`` attribute of
-            the instance that made created this instance.
+            the instance that creates this entry.
 
         parent: `~.Directory`
             The filesystem parent of this
@@ -99,24 +85,37 @@ class BaseEntry(EntryAttributes):
         string += ')>'
         return string
 
-    def generate_inode_number(self):
-        """Generate a unique inode number.
+    _prints = ('path', 'inode', )
 
-        By default this is done by taking part of the result of uuid4. This
-        method can be overridden if another method is preferred.
+    _dirty = False
+
+    #: The amount of times this entry has been looked up by the kernel.
+    #: This is increased by a couple of methodes called on `~.Operations` by
+    #: normal filesystem operations.
+    lookup_count = 0
+
+    #: Indicates if the entry has been deleted.
+    deleted = False
+
+    @property
+    def inode(self):
+        """The inode number.
+
+        This is simply an alias for `~.llfuse.EntryAttributes.st_ino` with a
+        clearer name.
         """
+        return self.st_ino
 
-        inode = uuid4().int & (1 << 32)-1
-        while inode in self.fs:
-            inode = uuid4().int & (1 << 32)-1
-        return inode
-
-    def update_modified(self):
-        """Update the modified time to the current time."""
-        self.modified = time.time()
+    @inode.setter
+    def inode(self, value):
+        self.st_ino = value
 
     @property
     def modified(self):
+        """The moment of last modification of the entry.
+
+        This is measured in seconds since the UNIX epoch.
+        """
         return self.st_mtime_ns / 10**9
 
     @modified.setter
@@ -125,6 +124,17 @@ class BaseEntry(EntryAttributes):
         self.st_atime_ns = value
         self.st_ctime_ns = value
         self.st_mtime_ns = value
+
+    @property
+    def dirty(self):
+        """Indicates if this entry has been changed but not synced."""
+        return self._dirty
+
+    @dirty.setter
+    def dirty(self, value):
+        self._dirty = value
+        if value is True and self.parent is not None:
+            self.parent.dirty_children = True
 
     @property
     def path(self):
@@ -146,10 +156,27 @@ class BaseEntry(EntryAttributes):
         """
         return len(self.parents)
 
-    def delete(self):
-        """Dummy delete method.
+    def generate_inode_number(self):
+        """Generate a unique inode number.
 
-        Override this when code needs to be executed on deletion.
+        By default this is done by taking part of the result of uuid4. This
+        method can be overridden if another method is preferred.
+        """
+
+        inode = uuid4().int & (1 << 32)-1
+        while inode in self.fs:
+            inode = uuid4().int & (1 << 32)-1
+        return inode
+
+    def update_modified(self):
+        """Update the modified time to the current time."""
+        self.modified = time.time()
+
+    def delete(self):
+        """Basic deletion operations.
+
+        Override this when code needs to be executed on deletion. Keep calling
+        this one by using `super` though, since it does some internal things.
         """
         logging.info('Deleting %s', self.path)
         self.deleted = True
@@ -161,17 +188,8 @@ class BaseEntry(EntryAttributes):
         """
         logging.info('Saving %s', self.path)
 
-    @property
-    def dirty(self):
-        return self._dirty
-
-    @dirty.setter
-    def dirty(self, value):
-        self._dirty = value
-        if value is True and self.parent is not None:
-            self.parent.dirty_children = True
-
     def fsync(self):
+        """Save the entry if it is `~.BaseEntry.dirty`."""
         if self.dirty:
             with _convert_error_to_fuse_error('saving', self.path):
                 self.save()
@@ -205,6 +223,7 @@ class File(BaseEntry):
 
     @property
     def content(self):
+        """The content of this file in bytes."""
         if self._content is None:
             with _convert_error_to_fuse_error('refreshing content of',
                                               self.path):
@@ -253,6 +272,26 @@ class Directory(BaseEntry):
                 self.refresh_children()
         return self._children
 
+    @property
+    def path(self):
+        """The full path of this directory from the mount directory."""
+        return super().path + '/'
+
+    @property
+    def dirty_children(self):
+        """Indicates if the `~.children` need to be synced.
+
+        It is set to `True` if a child of this directory is `~.BaseEntry.dirty`
+        or has `~.dirty_children` itself.
+        """
+        return self._dirty_children
+
+    @dirty_children.setter
+    def dirty_children(self, value):
+        self._dirty_children = value
+        if value is True and self.parent is not None:
+            self.parent.dirty_children = True
+
     def refresh_children(self):
         """Initialize children as an empty `dict`.
 
@@ -262,12 +301,12 @@ class Directory(BaseEntry):
         """
         self._children = {}
 
-    @property
-    def path(self):
-        """The full path of this directory from the mount directory."""
-        return super().path + '/'
-
     def fsync(self):
+        """Save this entry and `~.BaseEntry.fsync` its children.
+
+        Saving is only done if this entry is `~.BaseEntry.dirty` and syncing
+        the children is only done if `~.dirty_children` is `True`.
+        """
         super().fsync()
 
         if self.dirty_children:
@@ -275,13 +314,3 @@ class Directory(BaseEntry):
                 c.fsync()
 
             self.dirty_children = False
-
-    @property
-    def dirty_children(self):
-        return self._dirty_children
-
-    @dirty_children.setter
-    def dirty_children(self, value):
-        self._dirty_children = value
-        if value is True and self.parent is not None:
-            self.parent.dirty_children = True

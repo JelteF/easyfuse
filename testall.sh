@@ -75,14 +75,14 @@ fi
 # if [ "$clean" = 'TRUE' ]; then
 #     rm *.pdf *.log *.aux *.tex *.fls *.fdb_latexmk
 # fi
-#
-#
-# if [ "$python_version" = '3' -a "$nodoc" != 'TRUE' ]; then
-#     echo -e '\e[32mChecking for errors in docs and docstrings\e[0m'
-#     cd docs
-#     ./create_doc_files.sh -p $python
-#     make clean
-#     if ! $python $(which sphinx-build) -b html -d build/doctrees/ source build/html -nW; then
-#         exit 1
-#     fi
-# fi
+
+
+if [ "$python_version" = '3' -a "$nodoc" != 'TRUE' ]; then
+    echo -e '\e[32mChecking for errors in docs and docstrings\e[0m'
+    cd docs
+    ./create_doc_files.sh -p $python
+    make clean
+    if ! $python $(which sphinx-build) -b html -d _build/doctrees/ . _build/html -nW; then
+        exit 1
+    fi
+fi

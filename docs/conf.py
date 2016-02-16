@@ -92,7 +92,7 @@ language = None
 #today_fmt = '%B %d, %Y'
 
 autodoc_member_order = 'bysource'
-autodoc_default_flags = ['inherited-members']
+autodoc_default_flags = []
 autoclass_content = 'both'
 
 
