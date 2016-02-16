@@ -163,9 +163,9 @@ class BaseEntry(EntryAttributes):
         method can be overridden if another method is preferred.
         """
 
-        inode = uuid4().int & (1 << 32)-1
+        inode = uuid4().int & ((1 << 32) - 1)
         while inode in self.fs:
-            inode = uuid4().int & (1 << 32)-1
+            inode = uuid4().int & ((1 << 32) - 1)
         return inode
 
     def update_modified(self):

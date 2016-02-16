@@ -5,5 +5,5 @@ A Python library to create a simple FUSE file system.
     :license: MIT, see License for more details.
 """
 
-from .operations import Operations  # noqa
-from .filesystem import Directory, File, BaseEntry  # noqa
+from .operations import Operations
+from .filesystem import Directory, File, BaseEntry
