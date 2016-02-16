@@ -157,26 +157,6 @@
   </dt>
 
   </dl></td>
-  <td style="width: 33%" valign="top"><dl>
-      
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.BaseEntry.attr_timeout">attr_timeout (BaseEntry attribute)</a>
-  </dt>
-
-      <dd><dl>
-        
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.Directory.attr_timeout">(Directory attribute)</a>
-  </dt>
-
-        
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.File.attr_timeout">(File attribute)</a>
-  </dt>
-
-        
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.LazyFile.attr_timeout">(LazyFile attribute)</a>
-  </dt>
-
-      </dl></dd>
-  </dl></td>
 </tr></table>
 
 <h2 id="B">B</h2>
@@ -193,15 +173,19 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.Directory.children">children (Directory attribute)</a>
+  <dt><a href="easyfuse/easyfuse.operations.html#easyfuse.operations.Operations.cancel_autosync_timer">cancel_autosync_timer() (Operations method)</a>
   </dt>
 
       
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.LazyFile.content">content (LazyFile attribute)</a>
+  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.Directory.children">children (Directory attribute)</a>
   </dt>
 
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.File.content">content (File attribute)</a>
+  </dt>
+
       
   <dt><a href="easyfuse/easyfuse.operations.html#easyfuse.operations.Operations.create">create() (Operations method)</a>
   </dt>
@@ -216,46 +200,30 @@
   <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.BaseEntry.delete">delete() (BaseEntry method)</a>
   </dt>
 
-      <dd><dl>
-        
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.Directory.delete">(Directory method)</a>
+      
+  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.BaseEntry.deleted">deleted (BaseEntry attribute)</a>
   </dt>
 
-        
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.File.delete">(File method)</a>
-  </dt>
-
-        
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.LazyFile.delete">(LazyFile method)</a>
-  </dt>
-
-      </dl></dd>
       
   <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.BaseEntry.depth">depth (BaseEntry attribute)</a>
   </dt>
 
-      <dd><dl>
-        
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.Directory.depth">(Directory attribute)</a>
-  </dt>
-
-        
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.File.depth">(File attribute)</a>
-  </dt>
-
-        
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.LazyFile.depth">(LazyFile attribute)</a>
-  </dt>
-
-      </dl></dd>
-  </dl></td>
-  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="easyfuse/easyfuse.operations.html#easyfuse.operations.Operations.destroy">destroy() (Operations method)</a>
   </dt>
 
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.Directory">Directory (class in easyfuse.filesystem)</a>
+  </dt>
+
+      
+  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.BaseEntry.dirty">dirty (BaseEntry attribute)</a>
+  </dt>
+
+      
+  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.Directory.dirty_children">dirty_children (Directory attribute)</a>
   </dt>
 
   </dl></td>
@@ -275,23 +243,9 @@
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.BaseEntry.entry_timeout">entry_timeout (BaseEntry attribute)</a>
+  <dt><a href="easyfuse/easyfuse.utils.html#module-easyfuse.utils">easyfuse.utils (module)</a>
   </dt>
 
-      <dd><dl>
-        
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.Directory.entry_timeout">(Directory attribute)</a>
-  </dt>
-
-        
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.File.entry_timeout">(File attribute)</a>
-  </dt>
-
-        
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.LazyFile.entry_timeout">(LazyFile attribute)</a>
-  </dt>
-
-      </dl></dd>
   </dl></td>
 </tr></table>
 
@@ -303,21 +257,31 @@
   </dt>
 
       
-  <dt><a href="easyfuse/easyfuse.operations.html#easyfuse.operations.Operations.flush">flush() (Operations method)</a>
-  </dt>
-
-      
   <dt><a href="easyfuse/easyfuse.operations.html#easyfuse.operations.Operations.forget">forget() (Operations method)</a>
   </dt>
 
+      
+  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.BaseEntry.fsync">fsync() (BaseEntry method)</a>
+  </dt>
+
+      <dd><dl>
+        
+  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.Directory.fsync">(Directory method)</a>
+  </dt>
+
+        
+  <dt><a href="easyfuse/easyfuse.operations.html#easyfuse.operations.Operations.fsync">(Operations method)</a>
+  </dt>
+
+      </dl></dd>
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="easyfuse/easyfuse.operations.html#easyfuse.operations.Operations.fsync">fsync() (Operations method)</a>
+  <dt><a href="easyfuse/easyfuse.operations.html#easyfuse.operations.Operations.fsyncdir">fsyncdir() (Operations method)</a>
   </dt>
 
       
-  <dt><a href="easyfuse/easyfuse.operations.html#easyfuse.operations.Operations.fsyncdir">fsyncdir() (Operations method)</a>
+  <dt><a href="easyfuse/easyfuse.operations.html#easyfuse.operations.Operations.fullsync">fullsync() (Operations method)</a>
   </dt>
 
   </dl></td>
@@ -330,38 +294,6 @@
   <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.BaseEntry.generate_inode_number">generate_inode_number() (BaseEntry method)</a>
   </dt>
 
-      <dd><dl>
-        
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.Directory.generate_inode_number">(Directory method)</a>
-  </dt>
-
-        
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.File.generate_inode_number">(File method)</a>
-  </dt>
-
-        
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.LazyFile.generate_inode_number">(LazyFile method)</a>
-  </dt>
-
-      </dl></dd>
-      
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.BaseEntry.generation">generation (BaseEntry attribute)</a>
-  </dt>
-
-      <dd><dl>
-        
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.Directory.generation">(Directory attribute)</a>
-  </dt>
-
-        
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.File.generation">(File attribute)</a>
-  </dt>
-
-        
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.LazyFile.generation">(LazyFile attribute)</a>
-  </dt>
-
-      </dl></dd>
       
   <dt><a href="easyfuse/easyfuse.operations.html#easyfuse.operations.Operations.get_file_class">get_file_class() (Operations method)</a>
   </dt>
@@ -370,10 +302,6 @@
   <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="easyfuse/easyfuse.operations.html#easyfuse.operations.Operations.getattr">getattr() (Operations method)</a>
-  </dt>
-
-      
-  <dt><a href="easyfuse/easyfuse.operations.html#easyfuse.operations.Operations.getxattr">getxattr() (Operations method)</a>
   </dt>
 
   </dl></td>
@@ -386,30 +314,12 @@
   <dt><a href="easyfuse/easyfuse.operations.html#easyfuse.operations.Operations.illegal_filename">illegal_filename() (Operations method)</a>
   </dt>
 
-      
-  <dt><a href="easyfuse/easyfuse.operations.html#easyfuse.operations.Operations.init">init() (Operations method)</a>
-  </dt>
-
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.BaseEntry.inode">inode (BaseEntry attribute)</a>
   </dt>
 
-      <dd><dl>
-        
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.Directory.inode">(Directory attribute)</a>
-  </dt>
-
-        
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.File.inode">(File attribute)</a>
-  </dt>
-
-        
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.LazyFile.inode">(LazyFile attribute)</a>
-  </dt>
-
-      </dl></dd>
   </dl></td>
 </tr></table>
 
@@ -417,21 +327,13 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.LazyFile">LazyFile (class in easyfuse.filesystem)</a>
-  </dt>
-
-      
-  <dt><a href="easyfuse/easyfuse.operations.html#easyfuse.operations.Operations.link">link() (Operations method)</a>
+  <dt><a href="easyfuse/easyfuse.operations.html#easyfuse.operations.Operations.lookup">lookup() (Operations method)</a>
   </dt>
 
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="easyfuse/easyfuse.operations.html#easyfuse.operations.Operations.listxattr">listxattr() (Operations method)</a>
-  </dt>
-
-      
-  <dt><a href="easyfuse/easyfuse.operations.html#easyfuse.operations.Operations.lookup">lookup() (Operations method)</a>
+  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.BaseEntry.lookup_count">lookup_count (BaseEntry attribute)</a>
   </dt>
 
   </dl></td>
@@ -444,30 +346,12 @@
   <dt><a href="easyfuse/easyfuse.operations.html#easyfuse.operations.Operations.mkdir">mkdir() (Operations method)</a>
   </dt>
 
-      
-  <dt><a href="easyfuse/easyfuse.operations.html#easyfuse.operations.Operations.mknod">mknod() (Operations method)</a>
-  </dt>
-
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.BaseEntry.modified">modified (BaseEntry attribute)</a>
   </dt>
 
-      <dd><dl>
-        
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.Directory.modified">(Directory attribute)</a>
-  </dt>
-
-        
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.File.modified">(File attribute)</a>
-  </dt>
-
-        
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.LazyFile.modified">(LazyFile attribute)</a>
-  </dt>
-
-      </dl></dd>
   </dl></td>
 </tr></table>
 
@@ -498,20 +382,6 @@
   <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.BaseEntry.parents">parents (BaseEntry attribute)</a>
   </dt>
 
-      <dd><dl>
-        
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.Directory.parents">(Directory attribute)</a>
-  </dt>
-
-        
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.File.parents">(File attribute)</a>
-  </dt>
-
-        
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.LazyFile.parents">(LazyFile attribute)</a>
-  </dt>
-
-      </dl></dd>
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
       
@@ -521,14 +391,6 @@
       <dd><dl>
         
   <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.Directory.path">(Directory attribute)</a>
-  </dt>
-
-        
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.File.path">(File attribute)</a>
-  </dt>
-
-        
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.LazyFile.path">(LazyFile attribute)</a>
   </dt>
 
       </dl></dd>
@@ -546,30 +408,10 @@
   <dt><a href="easyfuse/easyfuse.operations.html#easyfuse.operations.Operations.readdir">readdir() (Operations method)</a>
   </dt>
 
-      
-  <dt><a href="easyfuse/easyfuse.operations.html#easyfuse.operations.Operations.readlink">readlink() (Operations method)</a>
-  </dt>
-
-      
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.Directory.refresh_children">refresh_children() (Directory method)</a>
-  </dt>
-
-      
-  <dt><a href="easyfuse/easyfuse.operations.html#easyfuse.operations.Operations.release">release() (Operations method)</a>
-  </dt>
-
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="easyfuse/easyfuse.operations.html#easyfuse.operations.Operations.releasedir">releasedir() (Operations method)</a>
-  </dt>
-
-      
-  <dt><a href="easyfuse/easyfuse.operations.html#easyfuse.operations.Operations.removexattr">removexattr() (Operations method)</a>
-  </dt>
-
-      
-  <dt><a href="easyfuse/easyfuse.operations.html#easyfuse.operations.Operations.rename">rename() (Operations method)</a>
+  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.Directory.refresh_children">refresh_children() (Directory method)</a>
   </dt>
 
       
@@ -586,256 +428,14 @@
   <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.BaseEntry.save">save() (BaseEntry method)</a>
   </dt>
 
-      <dd><dl>
-        
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.Directory.save">(Directory method)</a>
-  </dt>
-
-        
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.File.save">(File method)</a>
-  </dt>
-
-        
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.LazyFile.save">(LazyFile method)</a>
-  </dt>
-
-      </dl></dd>
       
   <dt><a href="easyfuse/easyfuse.operations.html#easyfuse.operations.Operations.setattr">setattr() (Operations method)</a>
   </dt>
 
-      
-  <dt><a href="easyfuse/easyfuse.operations.html#easyfuse.operations.Operations.setxattr">setxattr() (Operations method)</a>
-  </dt>
-
-      
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.BaseEntry.st_atime_ns">st_atime_ns (BaseEntry attribute)</a>
-  </dt>
-
-      <dd><dl>
-        
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.Directory.st_atime_ns">(Directory attribute)</a>
-  </dt>
-
-        
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.File.st_atime_ns">(File attribute)</a>
-  </dt>
-
-        
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.LazyFile.st_atime_ns">(LazyFile attribute)</a>
-  </dt>
-
-      </dl></dd>
-      
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.BaseEntry.st_blksize">st_blksize (BaseEntry attribute)</a>
-  </dt>
-
-      <dd><dl>
-        
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.Directory.st_blksize">(Directory attribute)</a>
-  </dt>
-
-        
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.File.st_blksize">(File attribute)</a>
-  </dt>
-
-        
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.LazyFile.st_blksize">(LazyFile attribute)</a>
-  </dt>
-
-      </dl></dd>
-      
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.BaseEntry.st_blocks">st_blocks (BaseEntry attribute)</a>
-  </dt>
-
-      <dd><dl>
-        
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.Directory.st_blocks">(Directory attribute)</a>
-  </dt>
-
-        
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.File.st_blocks">(File attribute)</a>
-  </dt>
-
-        
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.LazyFile.st_blocks">(LazyFile attribute)</a>
-  </dt>
-
-      </dl></dd>
-      
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.BaseEntry.st_ctime_ns">st_ctime_ns (BaseEntry attribute)</a>
-  </dt>
-
-      <dd><dl>
-        
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.Directory.st_ctime_ns">(Directory attribute)</a>
-  </dt>
-
-        
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.File.st_ctime_ns">(File attribute)</a>
-  </dt>
-
-        
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.LazyFile.st_ctime_ns">(LazyFile attribute)</a>
-  </dt>
-
-      </dl></dd>
-      
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.BaseEntry.st_gid">st_gid (BaseEntry attribute)</a>
-  </dt>
-
-      <dd><dl>
-        
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.Directory.st_gid">(Directory attribute)</a>
-  </dt>
-
-        
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.File.st_gid">(File attribute)</a>
-  </dt>
-
-        
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.LazyFile.st_gid">(LazyFile attribute)</a>
-  </dt>
-
-      </dl></dd>
-      
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.BaseEntry.st_ino">st_ino (BaseEntry attribute)</a>
-  </dt>
-
-      <dd><dl>
-        
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.Directory.st_ino">(Directory attribute)</a>
-  </dt>
-
-        
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.File.st_ino">(File attribute)</a>
-  </dt>
-
-        
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.LazyFile.st_ino">(LazyFile attribute)</a>
-  </dt>
-
-      </dl></dd>
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.BaseEntry.st_mode">st_mode (BaseEntry attribute)</a>
-  </dt>
-
-      <dd><dl>
-        
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.Directory.st_mode">(Directory attribute)</a>
-  </dt>
-
-        
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.File.st_mode">(File attribute)</a>
-  </dt>
-
-        
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.LazyFile.st_mode">(LazyFile attribute)</a>
-  </dt>
-
-      </dl></dd>
-      
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.BaseEntry.st_mtime_ns">st_mtime_ns (BaseEntry attribute)</a>
-  </dt>
-
-      <dd><dl>
-        
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.Directory.st_mtime_ns">(Directory attribute)</a>
-  </dt>
-
-        
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.File.st_mtime_ns">(File attribute)</a>
-  </dt>
-
-        
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.LazyFile.st_mtime_ns">(LazyFile attribute)</a>
-  </dt>
-
-      </dl></dd>
-      
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.BaseEntry.st_nlink">st_nlink (BaseEntry attribute)</a>
-  </dt>
-
-      <dd><dl>
-        
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.Directory.st_nlink">(Directory attribute)</a>
-  </dt>
-
-        
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.File.st_nlink">(File attribute)</a>
-  </dt>
-
-        
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.LazyFile.st_nlink">(LazyFile attribute)</a>
-  </dt>
-
-      </dl></dd>
-      
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.BaseEntry.st_rdev">st_rdev (BaseEntry attribute)</a>
-  </dt>
-
-      <dd><dl>
-        
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.Directory.st_rdev">(Directory attribute)</a>
-  </dt>
-
-        
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.File.st_rdev">(File attribute)</a>
-  </dt>
-
-        
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.LazyFile.st_rdev">(LazyFile attribute)</a>
-  </dt>
-
-      </dl></dd>
-      
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.BaseEntry.st_size">st_size (BaseEntry attribute)</a>
-  </dt>
-
-      <dd><dl>
-        
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.Directory.st_size">(Directory attribute)</a>
-  </dt>
-
-        
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.File.st_size">(File attribute)</a>
-  </dt>
-
-        
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.LazyFile.st_size">(LazyFile attribute)</a>
-  </dt>
-
-      </dl></dd>
-      
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.BaseEntry.st_uid">st_uid (BaseEntry attribute)</a>
-  </dt>
-
-      <dd><dl>
-        
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.Directory.st_uid">(Directory attribute)</a>
-  </dt>
-
-        
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.File.st_uid">(File attribute)</a>
-  </dt>
-
-        
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.LazyFile.st_uid">(LazyFile attribute)</a>
-  </dt>
-
-      </dl></dd>
-      
-  <dt><a href="easyfuse/easyfuse.operations.html#easyfuse.operations.Operations.stacktrace">stacktrace() (Operations method)</a>
-  </dt>
-
-      
-  <dt><a href="easyfuse/easyfuse.operations.html#easyfuse.operations.Operations.statfs">statfs() (Operations method)</a>
-  </dt>
-
-      
-  <dt><a href="easyfuse/easyfuse.operations.html#easyfuse.operations.Operations.symlink">symlink() (Operations method)</a>
+  <dt><a href="easyfuse/easyfuse.operations.html#easyfuse.operations.Operations.start_autosync_timer">start_autosync_timer() (Operations method)</a>
   </dt>
 
   </dl></td>
@@ -854,20 +454,6 @@
   <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.BaseEntry.update_modified">update_modified() (BaseEntry method)</a>
   </dt>
 
-      <dd><dl>
-        
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.Directory.update_modified">(Directory method)</a>
-  </dt>
-
-        
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.File.update_modified">(File method)</a>
-  </dt>
-
-        
-  <dt><a href="easyfuse/easyfuse.filesystem.html#easyfuse.filesystem.LazyFile.update_modified">(LazyFile method)</a>
-  </dt>
-
-      </dl></dd>
   </dl></td>
 </tr></table>
 

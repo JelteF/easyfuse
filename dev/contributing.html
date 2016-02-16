@@ -153,7 +153,7 @@ bottom of this section on how to use that instead.</p>
 <h3>OS specific dependencies<a class="headerlink" href="#os-specific-dependencies" title="Permalink to this headline">¶</a></h3>
 <p>Some dependencies are OS specific.</p>
 <p>For Ubuntu and other Debian based systems:</p>
-<div class="highlight-bash"><div class="highlight"><pre>sudo apt-get install python3 python3-dev virtualenv libattr1-dev libfuse-dev
+<div class="highlight-bash"><div class="highlight"><pre><span></span>sudo apt-get install python3 python3-dev virtualenv libattr1-dev libfuse-dev
 </pre></div>
 </div>
 </div>
@@ -162,13 +162,13 @@ bottom of this section on how to use that instead.</p>
 <p>You need your own fork of the <a class="reference external" href="https://github.com/JelteF/easyfuse">Github repository</a> by using the Github fork button. You will
 then need to clone your version of the repo using the normal way, something
 like this:</p>
-<div class="highlight-bash"><div class="highlight"><pre>git clone git@github.com:YourUserName/easyfuse
+<div class="highlight-bash"><div class="highlight"><pre><span></span>git clone git@github.com:YourUserName/easyfuse
 <span class="nb">cd</span> easyfuse
 </pre></div>
 </div>
 <p>Make your own branch for your specific feature or fix (don&#8217;t do this just on
 master):</p>
-<div class="highlight-bash"><div class="highlight"><pre>git checkout -b your-nice-feature
+<div class="highlight-bash"><div class="highlight"><pre><span></span>git checkout -b your-nice-feature
 </pre></div>
 </div>
 </div>
@@ -178,19 +178,19 @@ master):</p>
 the dependencies.</p>
 <ol class="arabic">
 <li><p class="first">Create a virtualenv by running:</p>
-<div class="highlight-bash"><div class="highlight"><pre>virtualenv venv -p python3
+<div class="highlight-bash"><div class="highlight"><pre><span></span>virtualenv venv -p python3
 </pre></div>
 </div>
 </li>
 <li><p class="first">Activate it by running (you should do this whenever you start working on
 your changes):</p>
-<div class="highlight-bash"><div class="highlight"><pre>. venv bin activate
+<div class="highlight-bash"><div class="highlight"><pre><span></span>. venv/bin/activate
 </pre></div>
 </div>
 </li>
 <li><p class="first">Install all the development dependencies inside the virtual environment by
 running:</p>
-<div class="highlight-bash"><div class="highlight"><pre>pip install -r dev_requirements.txt
+<div class="highlight-bash"><div class="highlight"><pre><span></span>pip install -r dev_requirements.txt
 </pre></div>
 </div>
 </li>
@@ -224,7 +224,7 @@ also tested with the <code class="docutils literal"><span class="pre">testall.sh
 changing behaviour.</li>
 <li>If your change is user facing, add it to the <strong>changelog</strong> so it will be
 mentioned in the next release. Its location is at
-<code class="docutils literal"><span class="pre">docs/source/changelog.rst</span></code>.</li>
+<code class="docutils literal"><span class="pre">docs/changelog.rst</span></code>.</li>
 </ol>
 </div>
 </div>

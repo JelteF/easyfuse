@@ -32,7 +32,7 @@
   
     <link rel="top" title="easyfuse 0.0.1 documentation" href="../index.html"/>
         <link rel="up" title="API reference" href="../api.html"/>
-        <link rel="next" title="Change Log" href="../changelog.html"/>
+        <link rel="next" title="easyfuse.utils" href="easyfuse.utils.html"/>
         <link rel="prev" title="easyfuse.filesystem" href="easyfuse.filesystem.html"/> 
 
   
@@ -87,6 +87,7 @@
 <li class="toctree-l1 current"><a class="reference internal" href="../api.html">API reference</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="easyfuse.filesystem.html">easyfuse.filesystem</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="">easyfuse.operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="easyfuse.utils.html">easyfuse.utils</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../changelog.html">Change Log</a></li>
@@ -142,7 +143,7 @@
 <p>This module implements the class that deals with operations from llfuse.</p>
 <dl class="class">
 <dt id="easyfuse.operations.Operations">
-<em class="property">class </em><code class="descname">Operations</code><span class="sig-paren">(</span><em>dir_class=&lt;class 'easyfuse.filesystem.Directory'&gt;</em>, <em>filesystem=None</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/operations.py#L18-L256"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.operations.Operations" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descname">Operations</code><span class="sig-paren">(</span><em>dir_class=&lt;class 'easyfuse.filesystem.Directory'&gt;</em>, <em>filesystem=None</em>, <em>*args</em>, <em>*</em>, <em>autosync_delay=3</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/operations.py#L24-L335"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.operations.Operations" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://pythonhosted.org/llfuse/operations.html#llfuse.Operations" title="(in Python-LLFUSE v0.42.1)"><code class="xref py py-class docutils literal"><span class="pre">llfuse.Operations</span></code></a></p>
 <p>The class that implements all file operations.</p>
 <p>Full descriptions of what the operations should do are shown at the
@@ -160,14 +161,44 @@ same.</p>
 <a class="reference internal" href="easyfuse.filesystem.html#easyfuse.filesystem.Directory" title="easyfuse.filesystem.Directory"><code class="xref py py-obj docutils literal"><span class="pre">Directory</span></code></a> object. It defaults to <code class="docutils literal"><span class="pre">{}</span></code> as this is fine in most
 cases. For performance a class could be used  that has a dict like
 interface to another storage option, such as a database.</li>
+<li><strong>autosync_delay</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.5)"><code class="xref py py-obj docutils literal"><span class="pre">int</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.5)"><code class="xref py py-obj docutils literal"><span class="pre">float</span></code></a>) &#8211; Automatically sync all dirty files after no <a class="reference internal" href="#easyfuse.operations.Operations.write" title="easyfuse.operations.Operations.write"><code class="xref py py-obj docutils literal"><span class="pre">write</span></code></a> has occured
+for this amount of seconds. If this is set to <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.5)"><code class="xref py py-obj docutils literal"><span class="pre">None</span></code></a>, autosync will
+be disabled.</li>
 </ul>
 </td>
 </tr>
 </tbody>
 </table>
 <dl class="method">
+<dt id="easyfuse.operations.Operations.fullsync">
+<code class="descname">fullsync</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/operations.py#L68-L71"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.operations.Operations.fullsync" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sync all dirty files using <a class="reference internal" href="#easyfuse.operations.Operations.fsync" title="easyfuse.operations.Operations.fsync"><code class="xref py py-obj docutils literal"><span class="pre">fsync</span></code></a>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="easyfuse.operations.Operations.start_autosync_timer">
+<code class="descname">start_autosync_timer</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/operations.py#L73-L83"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.operations.Operations.start_autosync_timer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start an autosync timer and cancel previously enabled ones.</p>
+<p>This is done by calling <a class="reference internal" href="#easyfuse.operations.Operations.fsyncdir" title="easyfuse.operations.Operations.fsyncdir"><code class="xref py py-obj docutils literal"><span class="pre">fsyncdir</span></code></a> on the <a class="reference external" href="https://pythonhosted.org/llfuse/data.html#llfuse.ROOT_INODE" title="(in Python-LLFUSE v0.42.1)"><code class="xref py py-obj docutils literal"><span class="pre">llfuse.ROOT_INODE</span></code></a>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="easyfuse.operations.Operations.cancel_autosync_timer">
+<code class="descname">cancel_autosync_timer</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/operations.py#L85-L89"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.operations.Operations.cancel_autosync_timer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cancel a possibly initiated autosync timer.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="easyfuse.operations.Operations.destroy">
+<code class="descname">destroy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/operations.py#L91-L98"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.operations.Operations.destroy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Execute all pending operations before unmount.</p>
+<p>This currently calls <a class="reference internal" href="#easyfuse.operations.Operations.cancel_autosync_timer" title="easyfuse.operations.Operations.cancel_autosync_timer"><code class="xref py py-obj docutils literal"><span class="pre">cancel_autosync_timer</span></code></a> and and does a
+<a class="reference internal" href="#easyfuse.operations.Operations.fullsync" title="easyfuse.operations.Operations.fullsync"><code class="xref py py-obj docutils literal"><span class="pre">fullsync</span></code></a>.</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="easyfuse.operations.Operations.getattr">
-<code class="descname">getattr</code><span class="sig-paren">(</span><em>inode</em>, <em>ctx=None</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/operations.py#L54-L70"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.operations.Operations.getattr" title="Permalink to this definition">¶</a></dt>
+<code class="descname">getattr</code><span class="sig-paren">(</span><em>inode</em>, <em>ctx=None</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/operations.py#L100-L116"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.operations.Operations.getattr" title="Permalink to this definition">¶</a></dt>
 <dd><p>Basic gettatr method.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -183,13 +214,13 @@ interface to another storage option, such as a database.</li>
 
 <dl class="method">
 <dt id="easyfuse.operations.Operations.readdir">
-<code class="descname">readdir</code><span class="sig-paren">(</span><em>fh</em>, <em>offset</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/operations.py#L72-L98"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.operations.Operations.readdir" title="Permalink to this definition">¶</a></dt>
+<code class="descname">readdir</code><span class="sig-paren">(</span><em>fh</em>, <em>offset</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/operations.py#L118-L144"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.operations.Operations.readdir" title="Permalink to this definition">¶</a></dt>
 <dd><p>A basic implementation <a class="reference external" href="https://pythonhosted.org/llfuse/operations.html#llfuse.Operations.readdir" title="(in Python-LLFUSE v0.42.1)"><code class="xref py py-obj docutils literal"><span class="pre">llfuse.Operations.readdir</span></code></a> method.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="easyfuse.operations.Operations.lookup">
-<code class="descname">lookup</code><span class="sig-paren">(</span><em>parent_inode</em>, <em>name</em>, <em>ctx=None</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/operations.py#L100-L120"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.operations.Operations.lookup" title="Permalink to this definition">¶</a></dt>
+<code class="descname">lookup</code><span class="sig-paren">(</span><em>parent_inode</em>, <em>name</em>, <em>ctx=None</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/operations.py#L146-L169"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.operations.Operations.lookup" title="Permalink to this definition">¶</a></dt>
 <dd><p>A basic implementation <a class="reference external" href="https://pythonhosted.org/llfuse/operations.html#llfuse.Operations.lookup" title="(in Python-LLFUSE v0.42.1)"><code class="xref py py-obj docutils literal"><span class="pre">llfuse.Operations.lookup</span></code></a> method.</p>
 <p>This currently does not do anything special for the
 <a class="reference external" href="https://pythonhosted.org/llfuse/data.html#llfuse.ROOT_INODE" title="(in Python-LLFUSE v0.42.1)"><code class="xref py py-obj docutils literal"><span class="pre">ROOT_INODE</span></code></a>, but it seems to work anyway.</p>
@@ -197,43 +228,41 @@ interface to another storage option, such as a database.</li>
 
 <dl class="method">
 <dt id="easyfuse.operations.Operations.access">
-<code class="descname">access</code><span class="sig-paren">(</span><em>inode</em>, <em>mode</em>, <em>ctx=None</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/operations.py#L122-L128"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.operations.Operations.access" title="Permalink to this definition">¶</a></dt>
+<code class="descname">access</code><span class="sig-paren">(</span><em>inode</em>, <em>mode</em>, <em>ctx=None</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/operations.py#L171-L177"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.operations.Operations.access" title="Permalink to this definition">¶</a></dt>
 <dd><p>Let everybody access everything.</p>
 <p>TODO: Maybe implement access rights.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="easyfuse.operations.Operations.opendir">
-<code class="descname">opendir</code><span class="sig-paren">(</span><em>inode</em>, <em>ctx=None</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/operations.py#L130-L136"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.operations.Operations.opendir" title="Permalink to this definition">¶</a></dt>
+<code class="descname">opendir</code><span class="sig-paren">(</span><em>inode</em>, <em>ctx=None</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/operations.py#L179-L182"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.operations.Operations.opendir" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a filehandler equal to the requested inode.</p>
-<p>TODO: Count accesses</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="easyfuse.operations.Operations.open">
-<code class="descname">open</code><span class="sig-paren">(</span><em>inode</em>, <em>flags</em>, <em>ctx=None</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/operations.py#L138-L145"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.operations.Operations.open" title="Permalink to this definition">¶</a></dt>
+<code class="descname">open</code><span class="sig-paren">(</span><em>inode</em>, <em>flags</em>, <em>ctx=None</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/operations.py#L184-L190"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.operations.Operations.open" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a filehandler equal to the inode.</p>
-<p>TODO: Count accesses
-TODO: Decide if something needs to be done with the flags</p>
+<p>TODO: Decide if something needs to be done with the flags</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="easyfuse.operations.Operations.mkdir">
-<code class="descname">mkdir</code><span class="sig-paren">(</span><em>parent_inode</em>, <em>name</em>, <em>mode</em>, <em>ctx</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/operations.py#L147-L154"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.operations.Operations.mkdir" title="Permalink to this definition">¶</a></dt>
+<code class="descname">mkdir</code><span class="sig-paren">(</span><em>parent_inode</em>, <em>name</em>, <em>mode</em>, <em>ctx</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/operations.py#L192-L201"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.operations.Operations.mkdir" title="Permalink to this definition">¶</a></dt>
 <dd><p>A basic implementation of the <a class="reference external" href="https://pythonhosted.org/llfuse/operations.html#llfuse.Operations.mkdir" title="(in Python-LLFUSE v0.42.1)"><code class="xref py py-obj docutils literal"><span class="pre">llfuse.Operations.mkdir</span></code></a> method.</p>
 <p>It uses the <code class="docutils literal"><span class="pre">dir_class</span></code> argument passed to <code class="docutils literal"><span class="pre">__init__</span></code>.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="easyfuse.operations.Operations.create">
-<code class="descname">create</code><span class="sig-paren">(</span><em>parent_inode</em>, <em>name</em>, <em>mode</em>, <em>flags</em>, <em>ctx=None</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/operations.py#L156-L173"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.operations.Operations.create" title="Permalink to this definition">¶</a></dt>
+<code class="descname">create</code><span class="sig-paren">(</span><em>parent_inode</em>, <em>name</em>, <em>mode</em>, <em>flags</em>, <em>ctx=None</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/operations.py#L203-L221"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.operations.Operations.create" title="Permalink to this definition">¶</a></dt>
 <dd><p>A basic implementation of the <a class="reference external" href="https://pythonhosted.org/llfuse/operations.html#llfuse.Operations.create" title="(in Python-LLFUSE v0.42.1)"><code class="xref py py-obj docutils literal"><span class="pre">llfuse.Operations.create</span></code></a> method.</p>
 <p>This method uses <a class="reference internal" href="#easyfuse.operations.Operations.illegal_filename" title="easyfuse.operations.Operations.illegal_filename"><code class="xref py py-obj docutils literal"><span class="pre">illegal_filename</span></code></a> and <a class="reference internal" href="#easyfuse.operations.Operations.get_file_class" title="easyfuse.operations.Operations.get_file_class"><code class="xref py py-obj docutils literal"><span class="pre">get_file_class</span></code></a>.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="easyfuse.operations.Operations.illegal_filename">
-<code class="descname">illegal_filename</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/operations.py#L175-L181"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.operations.Operations.illegal_filename" title="Permalink to this definition">¶</a></dt>
+<code class="descname">illegal_filename</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/operations.py#L223-L229"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.operations.Operations.illegal_filename" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return True if filename is illegal.</p>
 <p>By default all filenames are accepted. This method should be overridden
 when this is not the case.</p>
@@ -241,7 +270,7 @@ when this is not the case.</p>
 
 <dl class="method">
 <dt id="easyfuse.operations.Operations.get_file_class">
-<code class="descname">get_file_class</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/operations.py#L183-L189"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.operations.Operations.get_file_class" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_file_class</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/operations.py#L231-L237"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.operations.Operations.get_file_class" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the correct file class based on the filename.</p>
 <p>This can be used to use different clasess for different filenames. By
 default it returns <a class="reference internal" href="easyfuse.filesystem.html#easyfuse.filesystem.File" title="easyfuse.filesystem.File"><code class="xref py py-obj docutils literal"><span class="pre">File</span></code></a></p>
@@ -249,253 +278,54 @@ default it returns <a class="reference internal" href="easyfuse.filesystem.html#
 
 <dl class="method">
 <dt id="easyfuse.operations.Operations.read">
-<code class="descname">read</code><span class="sig-paren">(</span><em>fh</em>, <em>offset</em>, <em>length</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/operations.py#L191-L197"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.operations.Operations.read" title="Permalink to this definition">¶</a></dt>
+<code class="descname">read</code><span class="sig-paren">(</span><em>fh</em>, <em>offset</em>, <em>length</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/operations.py#L239-L246"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.operations.Operations.read" title="Permalink to this definition">¶</a></dt>
 <dd><p>A basic implementation of the <a class="reference external" href="https://pythonhosted.org/llfuse/operations.html#llfuse.Operations.read" title="(in Python-LLFUSE v0.42.1)"><code class="xref py py-obj docutils literal"><span class="pre">llfuse.Operations.read</span></code></a> method.</p>
-<p>It reads bytes from the <code class="docutils literal"><span class="pre">content</span></code> attribute of the selected entry.</p>
+<p>It reads bytes from the <a class="reference internal" href="easyfuse.filesystem.html#easyfuse.filesystem.File.content" title="easyfuse.filesystem.File.content"><code class="xref py py-obj docutils literal"><span class="pre">content</span></code></a> attribute of the selected
+<a class="reference internal" href="easyfuse.filesystem.html#easyfuse.filesystem.File" title="easyfuse.filesystem.File"><code class="xref py py-obj docutils literal"><span class="pre">File</span></code></a>.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="easyfuse.operations.Operations.setattr">
-<code class="descname">setattr</code><span class="sig-paren">(</span><em>inode</em>, <em>attr</em>, <em>fields</em>, <em>fh</em>, <em>ctx=None</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/operations.py#L199-L212"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.operations.Operations.setattr" title="Permalink to this definition">¶</a></dt>
+<code class="descname">setattr</code><span class="sig-paren">(</span><em>inode</em>, <em>attr</em>, <em>fields</em>, <em>fh</em>, <em>ctx=None</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/operations.py#L248-L261"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.operations.Operations.setattr" title="Permalink to this definition">¶</a></dt>
 <dd><p>A basic implementation of the <a class="reference external" href="https://pythonhosted.org/llfuse/operations.html#llfuse.Operations.setattr" title="(in Python-LLFUSE v0.42.1)"><code class="xref py py-obj docutils literal"><span class="pre">llfuse.Operations.setattr</span></code></a> method.</p>
 <p>It currently only supports changing the size of the file.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="easyfuse.operations.Operations.write">
-<code class="descname">write</code><span class="sig-paren">(</span><em>inode</em>, <em>offset</em>, <em>buf</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/operations.py#L214-L224"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.operations.Operations.write" title="Permalink to this definition">¶</a></dt>
+<code class="descname">write</code><span class="sig-paren">(</span><em>inode</em>, <em>offset</em>, <em>buf</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/operations.py#L263-L274"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.operations.Operations.write" title="Permalink to this definition">¶</a></dt>
 <dd><p>A basic implementation of the <a class="reference external" href="https://pythonhosted.org/llfuse/operations.html#llfuse.Operations.write" title="(in Python-LLFUSE v0.42.1)"><code class="xref py py-obj docutils literal"><span class="pre">llfuse.Operations.write</span></code></a> method.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="easyfuse.operations.Operations.unlink">
-<code class="descname">unlink</code><span class="sig-paren">(</span><em>parent_inode</em>, <em>name</em>, <em>ctx=None</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/operations.py#L226-L240"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.operations.Operations.unlink" title="Permalink to this definition">¶</a></dt>
+<code class="descname">unlink</code><span class="sig-paren">(</span><em>parent_inode</em>, <em>name</em>, <em>ctx=None</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/operations.py#L276-L294"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.operations.Operations.unlink" title="Permalink to this definition">¶</a></dt>
 <dd><p>A basic implementation of the <a class="reference external" href="https://pythonhosted.org/llfuse/operations.html#llfuse.Operations.unlink" title="(in Python-LLFUSE v0.42.1)"><code class="xref py py-obj docutils literal"><span class="pre">llfuse.Operations.unlink</span></code></a> method.</p>
 <p>This removes files.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="easyfuse.operations.Operations.rmdir">
-<code class="descname">rmdir</code><span class="sig-paren">(</span><em>parent_inode</em>, <em>name</em>, <em>ctx=None</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/operations.py#L242-L256"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.operations.Operations.rmdir" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="easyfuse.operations.Operations.destroy">
-<code class="descname">destroy</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="headerlink" href="#easyfuse.operations.Operations.destroy" title="Permalink to this definition">¶</a></dt>
-<dd><p>Clean up operations.</p>
-<p>This method will be called when <a class="reference external" href="https://pythonhosted.org/llfuse/fuse_api.html#llfuse.close" title="(in Python-LLFUSE v0.42.1)"><code class="xref py py-obj docutils literal"><span class="pre">llfuse.close</span></code></a> has been called and the
-file system is about to be unmounted.</p>
-<p>Since this handler is thus <em>not</em> run as part of the main loop, it is
-also <em>not</em> called with the global lock acquired (unless the caller of
-<a class="reference external" href="https://pythonhosted.org/llfuse/fuse_api.html#llfuse.close" title="(in Python-LLFUSE v0.42.1)"><code class="xref py py-obj docutils literal"><span class="pre">llfuse.close</span></code></a> already holds the lock).</p>
-<p>This method must not raise any exceptions (not even <code class="xref py py-obj docutils literal"><span class="pre">FUSEError</span></code>), since
-it is not handling a particular client request.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="easyfuse.operations.Operations.flush">
-<code class="descname">flush</code><span class="sig-paren">(</span><em>self</em>, <em>fh</em><span class="sig-paren">)</span><a class="headerlink" href="#easyfuse.operations.Operations.flush" title="Permalink to this definition">¶</a></dt>
-<dd><p>Handle close() syscall.</p>
-<p><em>fh</em> will by an integer filehandle returned by a prior <a class="reference internal" href="#easyfuse.operations.Operations.open" title="easyfuse.operations.Operations.open"><code class="xref py py-obj docutils literal"><span class="pre">open</span></code></a> or
-<a class="reference internal" href="#easyfuse.operations.Operations.create" title="easyfuse.operations.Operations.create"><code class="xref py py-obj docutils literal"><span class="pre">create</span></code></a> call.</p>
-<p>This method is called whenever a file descriptor is closed. It may be
-called multiple times for the same open file (e.g. if the file handle
-has been duplicated).</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="easyfuse.operations.Operations.forget">
-<code class="descname">forget</code><span class="sig-paren">(</span><em>self</em>, <em>inode_list</em><span class="sig-paren">)</span><a class="headerlink" href="#easyfuse.operations.Operations.forget" title="Permalink to this definition">¶</a></dt>
-<dd><p>Decrease lookup counts for inodes in <em>inode_list</em></p>
-<p><em>inode_list</em> is a list of <code class="docutils literal"><span class="pre">(inode,</span> <span class="pre">nlookup)</span></code> tuples. This method
-should reduce the lookup count for each <em>inode</em> by <em>nlookup</em>.</p>
-<p>If the lookup count reaches zero, the inode is currently not known to
-the kernel. In this case, the file system will typically check if there
-are still directory entries referring to this inode and, if not, remove
-the inode.</p>
-<p>If the file system is unmounted, it may not have received <a class="reference internal" href="#easyfuse.operations.Operations.forget" title="easyfuse.operations.Operations.forget"><code class="xref py py-obj docutils literal"><span class="pre">forget</span></code></a> calls
-to bring all lookup counts to zero. The <a class="reference internal" href="#easyfuse.operations.Operations.destroy" title="easyfuse.operations.Operations.destroy"><code class="xref py py-obj docutils literal"><span class="pre">destroy</span></code></a> method should be used
-to clean up inodes that at that point still have non-zero lookup count
-(e.g. by calling <a class="reference internal" href="#easyfuse.operations.Operations.forget" title="easyfuse.operations.Operations.forget"><code class="xref py py-obj docutils literal"><span class="pre">forget</span></code></a> with the current lookup count for every such
-inode).</p>
-<p>This method must not raise any exceptions (not even <code class="xref py py-obj docutils literal"><span class="pre">FUSEError</span></code>), since
-it is not handling a particular client request.</p>
+<code class="descname">rmdir</code><span class="sig-paren">(</span><em>parent_inode</em>, <em>name</em>, <em>ctx=None</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/operations.py#L296-L315"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.operations.Operations.rmdir" title="Permalink to this definition">¶</a></dt>
+<dd><p>A basic implementation of the <a class="reference external" href="https://pythonhosted.org/llfuse/operations.html#llfuse.Operations.rmdir" title="(in Python-LLFUSE v0.42.1)"><code class="xref py py-obj docutils literal"><span class="pre">llfuse.Operations.rmdir</span></code></a> method.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="easyfuse.operations.Operations.fsync">
-<code class="descname">fsync</code><span class="sig-paren">(</span><em>self</em>, <em>fh</em>, <em>datasync</em><span class="sig-paren">)</span><a class="headerlink" href="#easyfuse.operations.Operations.fsync" title="Permalink to this definition">¶</a></dt>
-<dd><p>Flush buffers for open file <em>fh</em></p>
-<p>If <em>datasync</em> is true, only the file contents should be
-flushed (in contrast to the metadata about the file).</p>
-<p><em>fh</em> will by an integer filehandle returned by a prior <a class="reference internal" href="#easyfuse.operations.Operations.open" title="easyfuse.operations.Operations.open"><code class="xref py py-obj docutils literal"><span class="pre">open</span></code></a> or
-<a class="reference internal" href="#easyfuse.operations.Operations.create" title="easyfuse.operations.Operations.create"><code class="xref py py-obj docutils literal"><span class="pre">create</span></code></a> call.</p>
+<code class="descname">fsync</code><span class="sig-paren">(</span><em>fh</em>, <em>datasync</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/operations.py#L317-L320"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.operations.Operations.fsync" title="Permalink to this definition">¶</a></dt>
+<dd><p>A basic implementation of the <a class="reference external" href="https://pythonhosted.org/llfuse/operations.html#llfuse.Operations.fsync" title="(in Python-LLFUSE v0.42.1)"><code class="xref py py-obj docutils literal"><span class="pre">llfuse.Operations.fsync</span></code></a> method.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="easyfuse.operations.Operations.fsyncdir">
-<code class="descname">fsyncdir</code><span class="sig-paren">(</span><em>self</em>, <em>fh</em>, <em>datasync</em><span class="sig-paren">)</span><a class="headerlink" href="#easyfuse.operations.Operations.fsyncdir" title="Permalink to this definition">¶</a></dt>
-<dd><p>Flush buffers for open directory <em>fh</em></p>
-<p>If <em>datasync</em> is true, only the directory contents should be
-flushed (in contrast to metadata about the directory itself).</p>
+<code class="descname">fsyncdir</code><span class="sig-paren">(</span><em>fh</em>, <em>datasync</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/operations.py#L322-L325"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.operations.Operations.fsyncdir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Same as <a class="reference internal" href="#easyfuse.operations.Operations.fsyncdir" title="easyfuse.operations.Operations.fsyncdir"><code class="xref py py-obj docutils literal"><span class="pre">fsyncdir</span></code></a> but for directories.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="easyfuse.operations.Operations.getxattr">
-<code class="descname">getxattr</code><span class="sig-paren">(</span><em>self</em>, <em>inode</em>, <em>name</em>, <em>ctx</em><span class="sig-paren">)</span><a class="headerlink" href="#easyfuse.operations.Operations.getxattr" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return extended attribute <em>name</em> of <em>inode</em></p>
-<p><em>ctx</em> will be a <code class="xref py py-obj docutils literal"><span class="pre">RequestContext</span></code> instance.</p>
-<p>If the attribute does not exist, the method must raise <code class="xref py py-obj docutils literal"><span class="pre">FUSEError</span></code> with
-an error code of <code class="xref py py-obj docutils literal"><span class="pre">ENOATTR</span></code>. <em>name</em> will be of type <a class="reference external" href="https://docs.python.org/3/library/functions.html#bytes" title="(in Python v3.5)"><code class="xref py py-obj docutils literal"><span class="pre">bytes</span></code></a>, but is
-guaranteed not to contain zero-bytes (<code class="docutils literal"><span class="pre">\0</span></code>).</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="easyfuse.operations.Operations.init">
-<code class="descname">init</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="headerlink" href="#easyfuse.operations.Operations.init" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initialize operations</p>
-<p>This method will be called just before the file system starts handling
-requests. It must not raise any exceptions (not even <code class="xref py py-obj docutils literal"><span class="pre">FUSEError</span></code>), since
-it is not handling a particular client request.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="easyfuse.operations.Operations.link">
-<code class="descname">link</code><span class="sig-paren">(</span><em>self</em>, <em>inode</em>, <em>new_parent_inode</em>, <em>new_name</em>, <em>ctx</em><span class="sig-paren">)</span><a class="headerlink" href="#easyfuse.operations.Operations.link" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create directory entry <em>name</em> in <em>parent_inode</em> refering to <em>inode</em>.</p>
-<p><em>ctx</em> will be a <code class="xref py py-obj docutils literal"><span class="pre">RequestContext</span></code> instance.</p>
-<p>The method must return an <code class="xref py py-obj docutils literal"><span class="pre">EntryAttributes</span></code> instance with the
-attributes of the newly created directory entry.</p>
-<p>(Successful) execution of this handler increases the lookup count for
-the returned inode by one.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="easyfuse.operations.Operations.listxattr">
-<code class="descname">listxattr</code><span class="sig-paren">(</span><em>self</em>, <em>inode</em>, <em>ctx</em><span class="sig-paren">)</span><a class="headerlink" href="#easyfuse.operations.Operations.listxattr" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get list of extended attributes for <em>inode</em></p>
-<p><em>ctx</em> will be a <code class="xref py py-obj docutils literal"><span class="pre">RequestContext</span></code> instance.</p>
-<p>This method must return an iterator over a sequence of <a class="reference external" href="https://docs.python.org/3/library/functions.html#bytes" title="(in Python v3.5)"><code class="xref py py-obj docutils literal"><span class="pre">bytes</span></code></a> objects.
-The objects must not to include zero-bytes (<code class="docutils literal"><span class="pre">\0</span></code>).</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="easyfuse.operations.Operations.mknod">
-<code class="descname">mknod</code><span class="sig-paren">(</span><em>self</em>, <em>parent_inode</em>, <em>name</em>, <em>mode</em>, <em>rdev</em>, <em>ctx</em><span class="sig-paren">)</span><a class="headerlink" href="#easyfuse.operations.Operations.mknod" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create (possibly special) file</p>
-<p>This method must create a (special or regular) file <em>name</em> in the
-directory with inode <em>parent_inode</em>. Whether the file is special or
-regular is determined by its <em>mode</em>. If the file is neither a block nor
-character device, <em>rdev</em> can be ignored. <em>ctx</em> will be a
-<code class="xref py py-obj docutils literal"><span class="pre">RequestContext</span></code> instance.</p>
-<p>The method must return an <code class="xref py py-obj docutils literal"><span class="pre">EntryAttributes</span></code> instance with the attributes
-of the newly created directory entry.</p>
-<p>(Successful) execution of this handler increases the lookup count for
-the returned inode by one.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="easyfuse.operations.Operations.readlink">
-<code class="descname">readlink</code><span class="sig-paren">(</span><em>self</em>, <em>inode</em>, <em>ctx</em><span class="sig-paren">)</span><a class="headerlink" href="#easyfuse.operations.Operations.readlink" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return target of symbolic link <em>inode</em>.</p>
-<p><em>ctx</em> will be a <code class="xref py py-obj docutils literal"><span class="pre">RequestContext</span></code> instance.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="easyfuse.operations.Operations.release">
-<code class="descname">release</code><span class="sig-paren">(</span><em>self</em>, <em>fh</em><span class="sig-paren">)</span><a class="headerlink" href="#easyfuse.operations.Operations.release" title="Permalink to this definition">¶</a></dt>
-<dd><p>Release open file</p>
-<p>This method will be called when the last file descriptor of <em>fh</em> has
-been closed, i.e. when the file is no longer opened by any client
-process.</p>
-<p><em>fh</em> will by an integer filehandle returned by a prior <a class="reference internal" href="#easyfuse.operations.Operations.open" title="easyfuse.operations.Operations.open"><code class="xref py py-obj docutils literal"><span class="pre">open</span></code></a> or
-<a class="reference internal" href="#easyfuse.operations.Operations.create" title="easyfuse.operations.Operations.create"><code class="xref py py-obj docutils literal"><span class="pre">create</span></code></a> call. Once <a class="reference internal" href="#easyfuse.operations.Operations.release" title="easyfuse.operations.Operations.release"><code class="xref py py-obj docutils literal"><span class="pre">release</span></code></a> has been called, no future requests for
-<em>fh</em> will be received (until the value is re-used in the return value of
-another <a class="reference internal" href="#easyfuse.operations.Operations.open" title="easyfuse.operations.Operations.open"><code class="xref py py-obj docutils literal"><span class="pre">open</span></code></a> or <a class="reference internal" href="#easyfuse.operations.Operations.create" title="easyfuse.operations.Operations.create"><code class="xref py py-obj docutils literal"><span class="pre">create</span></code></a> call).</p>
-<p>This method may return an error by raising <code class="xref py py-obj docutils literal"><span class="pre">FUSEError</span></code>, but the error
-will be discarded because there is no corresponding client request.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="easyfuse.operations.Operations.releasedir">
-<code class="descname">releasedir</code><span class="sig-paren">(</span><em>self</em>, <em>fh</em><span class="sig-paren">)</span><a class="headerlink" href="#easyfuse.operations.Operations.releasedir" title="Permalink to this definition">¶</a></dt>
-<dd><p>Release open directory</p>
-<p>This method will be called exactly once for each <a class="reference internal" href="#easyfuse.operations.Operations.opendir" title="easyfuse.operations.Operations.opendir"><code class="xref py py-obj docutils literal"><span class="pre">opendir</span></code></a> call. After
-<em>fh</em> has been released, no further <a class="reference internal" href="#easyfuse.operations.Operations.readdir" title="easyfuse.operations.Operations.readdir"><code class="xref py py-obj docutils literal"><span class="pre">readdir</span></code></a> requests will be received
-for it (until it is opened again with <a class="reference internal" href="#easyfuse.operations.Operations.opendir" title="easyfuse.operations.Operations.opendir"><code class="xref py py-obj docutils literal"><span class="pre">opendir</span></code></a>).</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="easyfuse.operations.Operations.removexattr">
-<code class="descname">removexattr</code><span class="sig-paren">(</span><em>self</em>, <em>inode</em>, <em>name</em>, <em>ctx</em><span class="sig-paren">)</span><a class="headerlink" href="#easyfuse.operations.Operations.removexattr" title="Permalink to this definition">¶</a></dt>
-<dd><p>Remove extended attribute <em>name</em> of <em>inode</em></p>
-<p><em>ctx</em> will be a <code class="xref py py-obj docutils literal"><span class="pre">RequestContext</span></code> instance.</p>
-<p>If the attribute does not exist, the method must raise <code class="xref py py-obj docutils literal"><span class="pre">FUSEError</span></code> with
-an error code of <code class="xref py py-obj docutils literal"><span class="pre">ENOATTR</span></code>. <em>name</em> will be of type <a class="reference external" href="https://docs.python.org/3/library/functions.html#bytes" title="(in Python v3.5)"><code class="xref py py-obj docutils literal"><span class="pre">bytes</span></code></a>, but is
-guaranteed not to contain zero-bytes (<code class="docutils literal"><span class="pre">\0</span></code>).</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="easyfuse.operations.Operations.rename">
-<code class="descname">rename</code><span class="sig-paren">(</span><em>self</em>, <em>parent_inode_old</em>, <em>name_old</em>, <em>parent_inode_new</em>, <em>name_new</em>, <em>ctx</em><span class="sig-paren">)</span><a class="headerlink" href="#easyfuse.operations.Operations.rename" title="Permalink to this definition">¶</a></dt>
-<dd><p>Rename a directory entry.</p>
-<p>This method must rename <em>name_old</em> in the directory with inode
-<em>parent_inode_old</em> to <em>name_new</em> in the directory with inode
-<em>parent_inode_new</em>.  If <em>name_new</em> already exists, it should be
-overwritten.  <em>ctx</em> will be a <code class="xref py py-obj docutils literal"><span class="pre">RequestContext</span></code> instance.</p>
-<p>Let the inode associated with <em>name_old</em> in <em>parent_inode_old</em> be
-<em>inode_moved</em>, and the inode associated with <em>name_new</em> in
-<em>parent_inode_new</em> (if it exists) be called <em>inode_deref</em>.</p>
-<p>If <em>inode_deref</em> exists and has a non-zero lookup count, or if there are
-other directory entries referring to <em>inode_deref</em>), the file system
-must update only the directory entry for <em>name_new</em> to point to
-<em>inode_moved</em> instead of <em>inode_deref</em>.  (Potential) removal of
-<em>inode_deref</em> (containing the previous contents of <em>name_new</em>) must be
-deferred to the <a class="reference internal" href="#easyfuse.operations.Operations.forget" title="easyfuse.operations.Operations.forget"><code class="xref py py-obj docutils literal"><span class="pre">forget</span></code></a> method to be carried out when the lookup count
-reaches zero (and of course only if at that point there are no more
-directory entries associated with <em>inode_deref</em> either).</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="easyfuse.operations.Operations.setxattr">
-<code class="descname">setxattr</code><span class="sig-paren">(</span><em>self</em>, <em>inode</em>, <em>name</em>, <em>value</em>, <em>ctx</em><span class="sig-paren">)</span><a class="headerlink" href="#easyfuse.operations.Operations.setxattr" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set extended attribute <em>name</em> of <em>inode</em> to <em>value</em>.</p>
-<p><em>ctx</em> will be a <code class="xref py py-obj docutils literal"><span class="pre">RequestContext</span></code> instance.</p>
-<p>The attribute may or may not exist already. Both <em>name</em> and <em>value</em> will
-be of type <a class="reference external" href="https://docs.python.org/3/library/functions.html#bytes" title="(in Python v3.5)"><code class="xref py py-obj docutils literal"><span class="pre">bytes</span></code></a>. <em>name</em> is guaranteed not to contain zero-bytes
-(<code class="docutils literal"><span class="pre">\0</span></code>).</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="easyfuse.operations.Operations.stacktrace">
-<code class="descname">stacktrace</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="headerlink" href="#easyfuse.operations.Operations.stacktrace" title="Permalink to this definition">¶</a></dt>
-<dd><p>Asynchronous debugging</p>
-<p>This method will be called when the <code class="docutils literal"><span class="pre">fuse_stacktrace</span></code> extended
-attribute is set on the mountpoint. It will be called without holding
-the global lock. The default implementation logs the current stack trace
-of every running Python thread. This can be quite useful to debug file
-system deadlocks.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="easyfuse.operations.Operations.statfs">
-<code class="descname">statfs</code><span class="sig-paren">(</span><em>self</em>, <em>ctx</em><span class="sig-paren">)</span><a class="headerlink" href="#easyfuse.operations.Operations.statfs" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get file system statistics</p>
-<p><em>ctx</em> will be a <code class="xref py py-obj docutils literal"><span class="pre">RequestContext</span></code> instance.</p>
-<p>The method must return an appropriately filled <code class="xref py py-obj docutils literal"><span class="pre">StatvfsData</span></code> instance.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="easyfuse.operations.Operations.symlink">
-<code class="descname">symlink</code><span class="sig-paren">(</span><em>self</em>, <em>parent_inode</em>, <em>name</em>, <em>target</em>, <em>ctx</em><span class="sig-paren">)</span><a class="headerlink" href="#easyfuse.operations.Operations.symlink" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a symbolic link</p>
-<p>This method must create a symbolink link named <em>name</em> in the directory
-with inode <em>parent_inode</em>, pointing to <em>target</em>.  <em>ctx</em> will be a
-<code class="xref py py-obj docutils literal"><span class="pre">RequestContext</span></code> instance.</p>
-<p>The method must return an <code class="xref py py-obj docutils literal"><span class="pre">EntryAttributes</span></code> instance with the attributes
-of the newly created directory entry.</p>
-<p>(Successful) execution of this handler increases the lookup count for
-the returned inode by one.</p>
+<dt id="easyfuse.operations.Operations.forget">
+<code class="descname">forget</code><span class="sig-paren">(</span><em>inode_list</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/operations.py#L327-L335"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.operations.Operations.forget" title="Permalink to this definition">¶</a></dt>
+<dd><p>A basic implementation of the <a class="reference external" href="https://pythonhosted.org/llfuse/operations.html#llfuse.Operations.forget" title="(in Python-LLFUSE v0.42.1)"><code class="xref py py-obj docutils literal"><span class="pre">llfuse.Operations.forget</span></code></a> method.</p>
 </dd></dl>
 
 </dd></dl>
@@ -509,7 +339,7 @@ the returned inode by one.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../changelog.html" class="btn btn-neutral float-right" title="Change Log" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="easyfuse.utils.html" class="btn btn-neutral float-right" title="easyfuse.utils" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="easyfuse.filesystem.html" class="btn btn-neutral" title="easyfuse.filesystem" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>

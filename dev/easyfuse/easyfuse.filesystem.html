@@ -87,6 +87,7 @@
 <li class="toctree-l1 current"><a class="reference internal" href="../api.html">API reference</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="">easyfuse.filesystem</a></li>
 <li class="toctree-l2"><a class="reference internal" href="easyfuse.operations.html">easyfuse.operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="easyfuse.utils.html">easyfuse.utils</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../changelog.html">Change Log</a></li>
@@ -142,9 +143,12 @@
 <p>This module implements the classes that map to filesystem objects.</p>
 <dl class="class">
 <dt id="easyfuse.filesystem.BaseEntry">
-<em class="property">class </em><code class="descname">BaseEntry</code><span class="sig-paren">(</span><em>name</em>, <em>fs</em>, <em>parent</em>, <em>*</em>, <em>inode=None</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/filesystem.py#L16-L155"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.filesystem.BaseEntry" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descname">BaseEntry</code><span class="sig-paren">(</span><em>name</em>, <em>fs</em>, <em>parent</em>, <em>*</em>, <em>inode=None</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/filesystem.py#L17-L196"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.filesystem.BaseEntry" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://pythonhosted.org/llfuse/data.html#llfuse.EntryAttributes" title="(in Python-LLFUSE v0.42.1)"><code class="xref py py-class docutils literal"><span class="pre">llfuse.EntryAttributes</span></code></a></p>
 <p>The base class that all filesystem classes should subclass.</p>
+<p>This is a subclass <a class="reference external" href="https://pythonhosted.org/llfuse/data.html#llfuse.EntryAttributes" title="(in Python-LLFUSE v0.42.1)"><code class="xref py py-obj docutils literal"><span class="pre">llfuse.EntryAttributes</span></code></a> and its attributes that are
+required to have a working filesystem are implemented. Most others are not
+actually implemented currently.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -154,7 +158,7 @@
 <li><strong>fs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.5)"><code class="xref py py-obj docutils literal"><span class="pre">dict</span></code></a> or dictlike) &#8211; This stores the mapping from an inode number to a <a class="reference internal" href="#easyfuse.filesystem.File" title="easyfuse.filesystem.File"><code class="xref py py-obj docutils literal"><span class="pre">File</span></code></a> or
 <a class="reference internal" href="#easyfuse.filesystem.Directory" title="easyfuse.filesystem.Directory"><code class="xref py py-obj docutils literal"><span class="pre">Directory</span></code></a> object. The newly created <a class="reference internal" href="#easyfuse.filesystem.BaseEntry" title="easyfuse.filesystem.BaseEntry"><code class="xref py py-obj docutils literal"><span class="pre">BaseEntry</span></code></a> will be added
 to this as well. It should most likely be the <code class="docutils literal"><span class="pre">fs</span></code> attribute of
-the instance that made created this instance.</li>
+the instance that creates this entry.</li>
 <li><strong>parent</strong> (<a class="reference internal" href="#easyfuse.filesystem.Directory" title="easyfuse.filesystem.Directory"><code class="xref py py-obj docutils literal"><span class="pre">Directory</span></code></a>) &#8211; The filesystem parent of this</li>
 <li><strong>inode</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.5)"><em>int</em></a>) &#8211; An explicit inode number. If it is <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.5)"><code class="xref py py-obj docutils literal"><span class="pre">None</span></code></a> a new number will
 automatically be generated. Only in rare cases this automatic
@@ -166,30 +170,62 @@ necassary.</li>
 </tbody>
 </table>
 <dl class="attribute">
-<dt id="easyfuse.filesystem.BaseEntry.st_uid">
-<code class="descname">st_uid</code><a class="headerlink" href="#easyfuse.filesystem.BaseEntry.st_uid" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="easyfuse.filesystem.BaseEntry.lookup_count">
+<code class="descname">lookup_count</code><em class="property"> = 0</em><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/filesystem.py#L95-L95"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.filesystem.BaseEntry.lookup_count" title="Permalink to this definition">¶</a></dt>
+<dd><p>The amount of times this entry has been looked up by the kernel.
+This is increased by a couple of methodes called on <a class="reference internal" href="easyfuse.operations.html#easyfuse.operations.Operations" title="easyfuse.operations.Operations"><code class="xref py py-obj docutils literal"><span class="pre">Operations</span></code></a> by
+normal filesystem operations.</p>
+</dd></dl>
 
 <dl class="attribute">
-<dt id="easyfuse.filesystem.BaseEntry.st_gid">
-<code class="descname">st_gid</code><a class="headerlink" href="#easyfuse.filesystem.BaseEntry.st_gid" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="easyfuse.filesystem.BaseEntry.st_mode">
-<code class="descname">st_mode</code><a class="headerlink" href="#easyfuse.filesystem.BaseEntry.st_mode" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="easyfuse.filesystem.BaseEntry.deleted">
+<code class="descname">deleted</code><em class="property"> = False</em><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/filesystem.py#L98-L98"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.filesystem.BaseEntry.deleted" title="Permalink to this definition">¶</a></dt>
+<dd><p>Indicates if the entry has been deleted.</p>
+</dd></dl>
 
 <dl class="attribute">
 <dt id="easyfuse.filesystem.BaseEntry.inode">
-<code class="descname">inode</code><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/filesystem.py#L21-L27"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.filesystem.BaseEntry.inode" title="Permalink to this definition">¶</a></dt>
+<code class="descname">inode</code><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/filesystem.py#L100-L107"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.filesystem.BaseEntry.inode" title="Permalink to this definition">¶</a></dt>
 <dd><p>The inode number.</p>
-<p>This is simply an alias for <a class="reference internal" href="#easyfuse.filesystem.BaseEntry.st_ino" title="easyfuse.filesystem.BaseEntry.st_ino"><code class="xref py py-obj docutils literal"><span class="pre">st_ino</span></code></a> with a clearer name.</p>
+<p>This is simply an alias for <a class="reference external" href="https://pythonhosted.org/llfuse/data.html#llfuse.EntryAttributes.st_ino" title="(in Python-LLFUSE v0.42.1)"><code class="xref py py-obj docutils literal"><span class="pre">st_ino</span></code></a> with a
+clearer name.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="easyfuse.filesystem.BaseEntry.modified">
+<code class="descname">modified</code><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/filesystem.py#L113-L119"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.filesystem.BaseEntry.modified" title="Permalink to this definition">¶</a></dt>
+<dd><p>The moment of last modification of the entry.</p>
+<p>This is measured in seconds since the UNIX epoch.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="easyfuse.filesystem.BaseEntry.dirty">
+<code class="descname">dirty</code><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/filesystem.py#L128-L131"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.filesystem.BaseEntry.dirty" title="Permalink to this definition">¶</a></dt>
+<dd><p>Indicates if this entry has been changed but not synced.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="easyfuse.filesystem.BaseEntry.path">
+<code class="descname">path</code><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/filesystem.py#L139-L142"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.filesystem.BaseEntry.path" title="Permalink to this definition">¶</a></dt>
+<dd><p>The full path of this entry from the mount directory.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="easyfuse.filesystem.BaseEntry.parents">
+<code class="descname">parents</code><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/filesystem.py#L144-L149"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.filesystem.BaseEntry.parents" title="Permalink to this definition">¶</a></dt>
+<dd><p>Recursively get the parents of this entry.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="easyfuse.filesystem.BaseEntry.depth">
+<code class="descname">depth</code><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/filesystem.py#L151-L157"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.filesystem.BaseEntry.depth" title="Permalink to this definition">¶</a></dt>
+<dd><p>The depth of the entry in the directory tree.</p>
+<p>This basically counts the number of parents this entry has.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="easyfuse.filesystem.BaseEntry.generate_inode_number">
-<code class="descname">generate_inode_number</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/filesystem.py#L96-L106"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.filesystem.BaseEntry.generate_inode_number" title="Permalink to this definition">¶</a></dt>
+<code class="descname">generate_inode_number</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/filesystem.py#L159-L169"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.filesystem.BaseEntry.generate_inode_number" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate a unique inode number.</p>
 <p>By default this is done by taking part of the result of uuid4. This
 method can be overridden if another method is preferred.</p>
@@ -197,286 +233,38 @@ method can be overridden if another method is preferred.</p>
 
 <dl class="method">
 <dt id="easyfuse.filesystem.BaseEntry.update_modified">
-<code class="descname">update_modified</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/filesystem.py#L108-L110"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.filesystem.BaseEntry.update_modified" title="Permalink to this definition">¶</a></dt>
+<code class="descname">update_modified</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/filesystem.py#L171-L173"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.filesystem.BaseEntry.update_modified" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update the modified time to the current time.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="easyfuse.filesystem.BaseEntry.modified">
-<code class="descname">modified</code><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/filesystem.py#L112-L114"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.filesystem.BaseEntry.modified" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="easyfuse.filesystem.BaseEntry.path">
-<code class="descname">path</code><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/filesystem.py#L123-L126"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.filesystem.BaseEntry.path" title="Permalink to this definition">¶</a></dt>
-<dd><p>The full path of this entry from the mount directory.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="easyfuse.filesystem.BaseEntry.parents">
-<code class="descname">parents</code><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/filesystem.py#L128-L133"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.filesystem.BaseEntry.parents" title="Permalink to this definition">¶</a></dt>
-<dd><p>Recursively get the parents of this entry.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="easyfuse.filesystem.BaseEntry.depth">
-<code class="descname">depth</code><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/filesystem.py#L135-L141"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.filesystem.BaseEntry.depth" title="Permalink to this definition">¶</a></dt>
-<dd><p>The depth of the entry in the directory tree.</p>
-<p>This basically counts the number of parents this entry has.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="easyfuse.filesystem.BaseEntry.delete">
-<code class="descname">delete</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/filesystem.py#L143-L148"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.filesystem.BaseEntry.delete" title="Permalink to this definition">¶</a></dt>
-<dd><p>Dummy delete method.</p>
-<p>Override this when code needs to be executed on deletion.</p>
+<code class="descname">delete</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/filesystem.py#L175-L182"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.filesystem.BaseEntry.delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Basic deletion operations.</p>
+<p>Override this when code needs to be executed on deletion. Keep calling
+this one by using <a class="reference external" href="https://docs.python.org/3/library/functions.html#super" title="(in Python v3.5)"><code class="xref py py-obj docutils literal"><span class="pre">super</span></code></a> though, since it does some internal things.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="easyfuse.filesystem.BaseEntry.save">
-<code class="descname">save</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/filesystem.py#L150-L155"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.filesystem.BaseEntry.save" title="Permalink to this definition">¶</a></dt>
+<code class="descname">save</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/filesystem.py#L184-L189"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.filesystem.BaseEntry.save" title="Permalink to this definition">¶</a></dt>
 <dd><p>Dummy save method.</p>
 <p>Override this when code needs to be executed when a file is saved.</p>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="easyfuse.filesystem.BaseEntry.attr_timeout">
-<code class="descname">attr_timeout</code><a class="headerlink" href="#easyfuse.filesystem.BaseEntry.attr_timeout" title="Permalink to this definition">¶</a></dt>
-<dd><p>Validity timeout for the name of the directory entry</p>
-<p>Floating point numbers may be used. Units are seconds.</p>
+<dl class="method">
+<dt id="easyfuse.filesystem.BaseEntry.fsync">
+<code class="descname">fsync</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/filesystem.py#L191-L196"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.filesystem.BaseEntry.fsync" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save the entry if it is <a class="reference internal" href="#easyfuse.filesystem.BaseEntry.dirty" title="easyfuse.filesystem.BaseEntry.dirty"><code class="xref py py-obj docutils literal"><span class="pre">dirty</span></code></a>.</p>
 </dd></dl>
-
-<dl class="attribute">
-<dt id="easyfuse.filesystem.BaseEntry.entry_timeout">
-<code class="descname">entry_timeout</code><a class="headerlink" href="#easyfuse.filesystem.BaseEntry.entry_timeout" title="Permalink to this definition">¶</a></dt>
-<dd><p>Validity timeout for the attributes of the directory entry</p>
-<p>Floating point numbers may be used. Units are seconds.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="easyfuse.filesystem.BaseEntry.generation">
-<code class="descname">generation</code><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/filesystem.py#L50-L50"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.filesystem.BaseEntry.generation" title="Permalink to this definition">¶</a></dt>
-<dd><p>The inode generation number</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="easyfuse.filesystem.BaseEntry.st_atime_ns">
-<code class="descname">st_atime_ns</code><a class="headerlink" href="#easyfuse.filesystem.BaseEntry.st_atime_ns" title="Permalink to this definition">¶</a></dt>
-<dd><p>Time of last access in (integer) nanoseconds</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="easyfuse.filesystem.BaseEntry.st_blksize">
-<code class="descname">st_blksize</code><a class="headerlink" href="#easyfuse.filesystem.BaseEntry.st_blksize" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="easyfuse.filesystem.BaseEntry.st_blocks">
-<code class="descname">st_blocks</code><a class="headerlink" href="#easyfuse.filesystem.BaseEntry.st_blocks" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="easyfuse.filesystem.BaseEntry.st_ctime_ns">
-<code class="descname">st_ctime_ns</code><a class="headerlink" href="#easyfuse.filesystem.BaseEntry.st_ctime_ns" title="Permalink to this definition">¶</a></dt>
-<dd><p>Time of last inode modification in (integer) nanoseconds</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="easyfuse.filesystem.BaseEntry.st_ino">
-<code class="descname">st_ino</code><a class="headerlink" href="#easyfuse.filesystem.BaseEntry.st_ino" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="easyfuse.filesystem.BaseEntry.st_mtime_ns">
-<code class="descname">st_mtime_ns</code><a class="headerlink" href="#easyfuse.filesystem.BaseEntry.st_mtime_ns" title="Permalink to this definition">¶</a></dt>
-<dd><p>Time of last modification in (integer) nanoseconds</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="easyfuse.filesystem.BaseEntry.st_nlink">
-<code class="descname">st_nlink</code><a class="headerlink" href="#easyfuse.filesystem.BaseEntry.st_nlink" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="easyfuse.filesystem.BaseEntry.st_rdev">
-<code class="descname">st_rdev</code><a class="headerlink" href="#easyfuse.filesystem.BaseEntry.st_rdev" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="easyfuse.filesystem.BaseEntry.st_size">
-<code class="descname">st_size</code><a class="headerlink" href="#easyfuse.filesystem.BaseEntry.st_size" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
 
 </dd></dl>
 
 <dl class="class">
 <dt id="easyfuse.filesystem.File">
-<em class="property">class </em><code class="descname">File</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/filesystem.py#L158-L177"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.filesystem.File" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descname">File</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/filesystem.py#L199-L239"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.filesystem.File" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#easyfuse.filesystem.BaseEntry" title="easyfuse.filesystem.BaseEntry"><code class="xref py py-class docutils literal"><span class="pre">easyfuse.filesystem.BaseEntry</span></code></a></p>
 <p>A class that represents a filesystem file.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>*args</strong> &#8211; Positional arguments that are passed to the initialization of
-<a class="reference internal" href="#easyfuse.filesystem.BaseEntry" title="easyfuse.filesystem.BaseEntry"><code class="xref py py-obj docutils literal"><span class="pre">BaseEntry</span></code></a>.</li>
-<li><strong>**kwargs</strong> &#8211; Keyword arguments that are passed to the initialization of
-<a class="reference internal" href="#easyfuse.filesystem.BaseEntry" title="easyfuse.filesystem.BaseEntry"><code class="xref py py-obj docutils literal"><span class="pre">BaseEntry</span></code></a>.</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-<dl class="attribute">
-<dt id="easyfuse.filesystem.File.attr_timeout">
-<code class="descname">attr_timeout</code><a class="headerlink" href="#easyfuse.filesystem.File.attr_timeout" title="Permalink to this definition">¶</a></dt>
-<dd><p>Validity timeout for the name of the directory entry</p>
-<p>Floating point numbers may be used. Units are seconds.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="easyfuse.filesystem.File.delete">
-<code class="descname">delete</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/filesystem.py#L143-L148"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.filesystem.File.delete" title="Permalink to this definition">¶</a></dt>
-<dd><p>Dummy delete method.</p>
-<p>Override this when code needs to be executed on deletion.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="easyfuse.filesystem.File.depth">
-<code class="descname">depth</code><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/filesystem.py#L135-L141"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.filesystem.File.depth" title="Permalink to this definition">¶</a></dt>
-<dd><p>The depth of the entry in the directory tree.</p>
-<p>This basically counts the number of parents this entry has.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="easyfuse.filesystem.File.entry_timeout">
-<code class="descname">entry_timeout</code><a class="headerlink" href="#easyfuse.filesystem.File.entry_timeout" title="Permalink to this definition">¶</a></dt>
-<dd><p>Validity timeout for the attributes of the directory entry</p>
-<p>Floating point numbers may be used. Units are seconds.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="easyfuse.filesystem.File.generate_inode_number">
-<code class="descname">generate_inode_number</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/filesystem.py#L96-L106"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.filesystem.File.generate_inode_number" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generate a unique inode number.</p>
-<p>By default this is done by taking part of the result of uuid4. This
-method can be overridden if another method is preferred.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="easyfuse.filesystem.File.generation">
-<code class="descname">generation</code><a class="headerlink" href="#easyfuse.filesystem.File.generation" title="Permalink to this definition">¶</a></dt>
-<dd><p>The inode generation number</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="easyfuse.filesystem.File.inode">
-<code class="descname">inode</code><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/filesystem.py#L21-L27"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.filesystem.File.inode" title="Permalink to this definition">¶</a></dt>
-<dd><p>The inode number.</p>
-<p>This is simply an alias for <a class="reference internal" href="#easyfuse.filesystem.File.st_ino" title="easyfuse.filesystem.File.st_ino"><code class="xref py py-obj docutils literal"><span class="pre">st_ino</span></code></a> with a clearer name.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="easyfuse.filesystem.File.modified">
-<code class="descname">modified</code><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/filesystem.py#L112-L114"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.filesystem.File.modified" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="easyfuse.filesystem.File.parents">
-<code class="descname">parents</code><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/filesystem.py#L128-L133"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.filesystem.File.parents" title="Permalink to this definition">¶</a></dt>
-<dd><p>Recursively get the parents of this entry.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="easyfuse.filesystem.File.path">
-<code class="descname">path</code><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/filesystem.py#L123-L126"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.filesystem.File.path" title="Permalink to this definition">¶</a></dt>
-<dd><p>The full path of this entry from the mount directory.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="easyfuse.filesystem.File.save">
-<code class="descname">save</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/filesystem.py#L150-L155"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.filesystem.File.save" title="Permalink to this definition">¶</a></dt>
-<dd><p>Dummy save method.</p>
-<p>Override this when code needs to be executed when a file is saved.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="easyfuse.filesystem.File.st_atime_ns">
-<code class="descname">st_atime_ns</code><a class="headerlink" href="#easyfuse.filesystem.File.st_atime_ns" title="Permalink to this definition">¶</a></dt>
-<dd><p>Time of last access in (integer) nanoseconds</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="easyfuse.filesystem.File.st_blksize">
-<code class="descname">st_blksize</code><a class="headerlink" href="#easyfuse.filesystem.File.st_blksize" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="easyfuse.filesystem.File.st_blocks">
-<code class="descname">st_blocks</code><a class="headerlink" href="#easyfuse.filesystem.File.st_blocks" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="easyfuse.filesystem.File.st_ctime_ns">
-<code class="descname">st_ctime_ns</code><a class="headerlink" href="#easyfuse.filesystem.File.st_ctime_ns" title="Permalink to this definition">¶</a></dt>
-<dd><p>Time of last inode modification in (integer) nanoseconds</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="easyfuse.filesystem.File.st_gid">
-<code class="descname">st_gid</code><a class="headerlink" href="#easyfuse.filesystem.File.st_gid" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="easyfuse.filesystem.File.st_ino">
-<code class="descname">st_ino</code><a class="headerlink" href="#easyfuse.filesystem.File.st_ino" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="easyfuse.filesystem.File.st_mode">
-<code class="descname">st_mode</code><a class="headerlink" href="#easyfuse.filesystem.File.st_mode" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="easyfuse.filesystem.File.st_mtime_ns">
-<code class="descname">st_mtime_ns</code><a class="headerlink" href="#easyfuse.filesystem.File.st_mtime_ns" title="Permalink to this definition">¶</a></dt>
-<dd><p>Time of last modification in (integer) nanoseconds</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="easyfuse.filesystem.File.st_nlink">
-<code class="descname">st_nlink</code><a class="headerlink" href="#easyfuse.filesystem.File.st_nlink" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="easyfuse.filesystem.File.st_rdev">
-<code class="descname">st_rdev</code><a class="headerlink" href="#easyfuse.filesystem.File.st_rdev" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="easyfuse.filesystem.File.st_size">
-<code class="descname">st_size</code><a class="headerlink" href="#easyfuse.filesystem.File.st_size" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="easyfuse.filesystem.File.st_uid">
-<code class="descname">st_uid</code><a class="headerlink" href="#easyfuse.filesystem.File.st_uid" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="easyfuse.filesystem.File.update_modified">
-<code class="descname">update_modified</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/filesystem.py#L108-L110"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.filesystem.File.update_modified" title="Permalink to this definition">¶</a></dt>
-<dd><p>Update the modified time to the current time.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="easyfuse.filesystem.LazyFile">
-<em class="property">class </em><code class="descname">LazyFile</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/filesystem.py#L180-L195"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.filesystem.LazyFile" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#easyfuse.filesystem.File" title="easyfuse.filesystem.File"><code class="xref py py-class docutils literal"><span class="pre">easyfuse.filesystem.File</span></code></a></p>
-<p>A class that represents a file that has lazy content loading.</p>
 <p>If a file is supposed to be synced, set the <code class="docutils literal"><span class="pre">content</span></code> attribute to <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.5)"><code class="xref py py-obj docutils literal"><span class="pre">None</span></code></a>
 after initialization.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -494,157 +282,16 @@ after initialization.</p>
 </tbody>
 </table>
 <dl class="attribute">
-<dt id="easyfuse.filesystem.LazyFile.content">
-<code class="descname">content</code><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/filesystem.py#L187-L191"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.filesystem.LazyFile.content" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="easyfuse.filesystem.LazyFile.attr_timeout">
-<code class="descname">attr_timeout</code><a class="headerlink" href="#easyfuse.filesystem.LazyFile.attr_timeout" title="Permalink to this definition">¶</a></dt>
-<dd><p>Validity timeout for the name of the directory entry</p>
-<p>Floating point numbers may be used. Units are seconds.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="easyfuse.filesystem.LazyFile.delete">
-<code class="descname">delete</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/filesystem.py#L143-L148"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.filesystem.LazyFile.delete" title="Permalink to this definition">¶</a></dt>
-<dd><p>Dummy delete method.</p>
-<p>Override this when code needs to be executed on deletion.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="easyfuse.filesystem.LazyFile.depth">
-<code class="descname">depth</code><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/filesystem.py#L135-L141"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.filesystem.LazyFile.depth" title="Permalink to this definition">¶</a></dt>
-<dd><p>The depth of the entry in the directory tree.</p>
-<p>This basically counts the number of parents this entry has.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="easyfuse.filesystem.LazyFile.entry_timeout">
-<code class="descname">entry_timeout</code><a class="headerlink" href="#easyfuse.filesystem.LazyFile.entry_timeout" title="Permalink to this definition">¶</a></dt>
-<dd><p>Validity timeout for the attributes of the directory entry</p>
-<p>Floating point numbers may be used. Units are seconds.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="easyfuse.filesystem.LazyFile.generate_inode_number">
-<code class="descname">generate_inode_number</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/filesystem.py#L96-L106"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.filesystem.LazyFile.generate_inode_number" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generate a unique inode number.</p>
-<p>By default this is done by taking part of the result of uuid4. This
-method can be overridden if another method is preferred.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="easyfuse.filesystem.LazyFile.generation">
-<code class="descname">generation</code><a class="headerlink" href="#easyfuse.filesystem.LazyFile.generation" title="Permalink to this definition">¶</a></dt>
-<dd><p>The inode generation number</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="easyfuse.filesystem.LazyFile.inode">
-<code class="descname">inode</code><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/filesystem.py#L21-L27"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.filesystem.LazyFile.inode" title="Permalink to this definition">¶</a></dt>
-<dd><p>The inode number.</p>
-<p>This is simply an alias for <a class="reference internal" href="#easyfuse.filesystem.LazyFile.st_ino" title="easyfuse.filesystem.LazyFile.st_ino"><code class="xref py py-obj docutils literal"><span class="pre">st_ino</span></code></a> with a clearer name.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="easyfuse.filesystem.LazyFile.modified">
-<code class="descname">modified</code><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/filesystem.py#L112-L114"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.filesystem.LazyFile.modified" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="easyfuse.filesystem.LazyFile.parents">
-<code class="descname">parents</code><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/filesystem.py#L128-L133"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.filesystem.LazyFile.parents" title="Permalink to this definition">¶</a></dt>
-<dd><p>Recursively get the parents of this entry.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="easyfuse.filesystem.LazyFile.path">
-<code class="descname">path</code><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/filesystem.py#L123-L126"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.filesystem.LazyFile.path" title="Permalink to this definition">¶</a></dt>
-<dd><p>The full path of this entry from the mount directory.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="easyfuse.filesystem.LazyFile.save">
-<code class="descname">save</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/filesystem.py#L150-L155"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.filesystem.LazyFile.save" title="Permalink to this definition">¶</a></dt>
-<dd><p>Dummy save method.</p>
-<p>Override this when code needs to be executed when a file is saved.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="easyfuse.filesystem.LazyFile.st_atime_ns">
-<code class="descname">st_atime_ns</code><a class="headerlink" href="#easyfuse.filesystem.LazyFile.st_atime_ns" title="Permalink to this definition">¶</a></dt>
-<dd><p>Time of last access in (integer) nanoseconds</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="easyfuse.filesystem.LazyFile.st_blksize">
-<code class="descname">st_blksize</code><a class="headerlink" href="#easyfuse.filesystem.LazyFile.st_blksize" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="easyfuse.filesystem.LazyFile.st_blocks">
-<code class="descname">st_blocks</code><a class="headerlink" href="#easyfuse.filesystem.LazyFile.st_blocks" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="easyfuse.filesystem.LazyFile.st_ctime_ns">
-<code class="descname">st_ctime_ns</code><a class="headerlink" href="#easyfuse.filesystem.LazyFile.st_ctime_ns" title="Permalink to this definition">¶</a></dt>
-<dd><p>Time of last inode modification in (integer) nanoseconds</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="easyfuse.filesystem.LazyFile.st_gid">
-<code class="descname">st_gid</code><a class="headerlink" href="#easyfuse.filesystem.LazyFile.st_gid" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="easyfuse.filesystem.LazyFile.st_ino">
-<code class="descname">st_ino</code><a class="headerlink" href="#easyfuse.filesystem.LazyFile.st_ino" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="easyfuse.filesystem.LazyFile.st_mode">
-<code class="descname">st_mode</code><a class="headerlink" href="#easyfuse.filesystem.LazyFile.st_mode" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="easyfuse.filesystem.LazyFile.st_mtime_ns">
-<code class="descname">st_mtime_ns</code><a class="headerlink" href="#easyfuse.filesystem.LazyFile.st_mtime_ns" title="Permalink to this definition">¶</a></dt>
-<dd><p>Time of last modification in (integer) nanoseconds</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="easyfuse.filesystem.LazyFile.st_nlink">
-<code class="descname">st_nlink</code><a class="headerlink" href="#easyfuse.filesystem.LazyFile.st_nlink" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="easyfuse.filesystem.LazyFile.st_rdev">
-<code class="descname">st_rdev</code><a class="headerlink" href="#easyfuse.filesystem.LazyFile.st_rdev" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="easyfuse.filesystem.LazyFile.st_size">
-<code class="descname">st_size</code><a class="headerlink" href="#easyfuse.filesystem.LazyFile.st_size" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="easyfuse.filesystem.LazyFile.st_uid">
-<code class="descname">st_uid</code><a class="headerlink" href="#easyfuse.filesystem.LazyFile.st_uid" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="easyfuse.filesystem.LazyFile.update_modified">
-<code class="descname">update_modified</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/filesystem.py#L108-L110"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.filesystem.LazyFile.update_modified" title="Permalink to this definition">¶</a></dt>
-<dd><p>Update the modified time to the current time.</p>
+<dt id="easyfuse.filesystem.File.content">
+<code class="descname">content</code><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/filesystem.py#L224-L231"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.filesystem.File.content" title="Permalink to this definition">¶</a></dt>
+<dd><p>The content of this file in bytes.</p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="class">
 <dt id="easyfuse.filesystem.Directory">
-<em class="property">class </em><code class="descname">Directory</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/filesystem.py#L198-L240"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.filesystem.Directory" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descname">Directory</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/filesystem.py#L242-L316"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.filesystem.Directory" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#easyfuse.filesystem.BaseEntry" title="easyfuse.filesystem.BaseEntry"><code class="xref py py-class docutils literal"><span class="pre">easyfuse.filesystem.BaseEntry</span></code></a></p>
 <p>A class that represents a directory in the filesystem.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -662,160 +309,40 @@ method can be overridden if another method is preferred.</p>
 </tbody>
 </table>
 <dl class="attribute">
-<dt id="easyfuse.filesystem.Directory.attr_timeout">
-<code class="descname">attr_timeout</code><a class="headerlink" href="#easyfuse.filesystem.Directory.attr_timeout" title="Permalink to this definition">¶</a></dt>
-<dd><p>Validity timeout for the name of the directory entry</p>
-<p>Floating point numbers may be used. Units are seconds.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="easyfuse.filesystem.Directory.delete">
-<code class="descname">delete</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/filesystem.py#L143-L148"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.filesystem.Directory.delete" title="Permalink to this definition">¶</a></dt>
-<dd><p>Dummy delete method.</p>
-<p>Override this when code needs to be executed on deletion.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="easyfuse.filesystem.Directory.depth">
-<code class="descname">depth</code><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/filesystem.py#L135-L141"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.filesystem.Directory.depth" title="Permalink to this definition">¶</a></dt>
-<dd><p>The depth of the entry in the directory tree.</p>
-<p>This basically counts the number of parents this entry has.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="easyfuse.filesystem.Directory.entry_timeout">
-<code class="descname">entry_timeout</code><a class="headerlink" href="#easyfuse.filesystem.Directory.entry_timeout" title="Permalink to this definition">¶</a></dt>
-<dd><p>Validity timeout for the attributes of the directory entry</p>
-<p>Floating point numbers may be used. Units are seconds.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="easyfuse.filesystem.Directory.generate_inode_number">
-<code class="descname">generate_inode_number</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/filesystem.py#L96-L106"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.filesystem.Directory.generate_inode_number" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generate a unique inode number.</p>
-<p>By default this is done by taking part of the result of uuid4. This
-method can be overridden if another method is preferred.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="easyfuse.filesystem.Directory.generation">
-<code class="descname">generation</code><a class="headerlink" href="#easyfuse.filesystem.Directory.generation" title="Permalink to this definition">¶</a></dt>
-<dd><p>The inode generation number</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="easyfuse.filesystem.Directory.inode">
-<code class="descname">inode</code><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/filesystem.py#L21-L27"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.filesystem.Directory.inode" title="Permalink to this definition">¶</a></dt>
-<dd><p>The inode number.</p>
-<p>This is simply an alias for <a class="reference internal" href="#easyfuse.filesystem.Directory.st_ino" title="easyfuse.filesystem.Directory.st_ino"><code class="xref py py-obj docutils literal"><span class="pre">st_ino</span></code></a> with a clearer name.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="easyfuse.filesystem.Directory.modified">
-<code class="descname">modified</code><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/filesystem.py#L112-L114"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.filesystem.Directory.modified" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="easyfuse.filesystem.Directory.parents">
-<code class="descname">parents</code><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/filesystem.py#L128-L133"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.filesystem.Directory.parents" title="Permalink to this definition">¶</a></dt>
-<dd><p>Recursively get the parents of this entry.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="easyfuse.filesystem.Directory.save">
-<code class="descname">save</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/filesystem.py#L150-L155"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.filesystem.Directory.save" title="Permalink to this definition">¶</a></dt>
-<dd><p>Dummy save method.</p>
-<p>Override this when code needs to be executed when a file is saved.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="easyfuse.filesystem.Directory.st_atime_ns">
-<code class="descname">st_atime_ns</code><a class="headerlink" href="#easyfuse.filesystem.Directory.st_atime_ns" title="Permalink to this definition">¶</a></dt>
-<dd><p>Time of last access in (integer) nanoseconds</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="easyfuse.filesystem.Directory.st_blksize">
-<code class="descname">st_blksize</code><a class="headerlink" href="#easyfuse.filesystem.Directory.st_blksize" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="easyfuse.filesystem.Directory.st_blocks">
-<code class="descname">st_blocks</code><a class="headerlink" href="#easyfuse.filesystem.Directory.st_blocks" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="easyfuse.filesystem.Directory.st_ctime_ns">
-<code class="descname">st_ctime_ns</code><a class="headerlink" href="#easyfuse.filesystem.Directory.st_ctime_ns" title="Permalink to this definition">¶</a></dt>
-<dd><p>Time of last inode modification in (integer) nanoseconds</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="easyfuse.filesystem.Directory.st_gid">
-<code class="descname">st_gid</code><a class="headerlink" href="#easyfuse.filesystem.Directory.st_gid" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="easyfuse.filesystem.Directory.st_ino">
-<code class="descname">st_ino</code><a class="headerlink" href="#easyfuse.filesystem.Directory.st_ino" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="easyfuse.filesystem.Directory.st_mode">
-<code class="descname">st_mode</code><a class="headerlink" href="#easyfuse.filesystem.Directory.st_mode" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="easyfuse.filesystem.Directory.st_mtime_ns">
-<code class="descname">st_mtime_ns</code><a class="headerlink" href="#easyfuse.filesystem.Directory.st_mtime_ns" title="Permalink to this definition">¶</a></dt>
-<dd><p>Time of last modification in (integer) nanoseconds</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="easyfuse.filesystem.Directory.st_nlink">
-<code class="descname">st_nlink</code><a class="headerlink" href="#easyfuse.filesystem.Directory.st_nlink" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="easyfuse.filesystem.Directory.st_rdev">
-<code class="descname">st_rdev</code><a class="headerlink" href="#easyfuse.filesystem.Directory.st_rdev" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="easyfuse.filesystem.Directory.st_size">
-<code class="descname">st_size</code><a class="headerlink" href="#easyfuse.filesystem.Directory.st_size" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="easyfuse.filesystem.Directory.st_uid">
-<code class="descname">st_uid</code><a class="headerlink" href="#easyfuse.filesystem.Directory.st_uid" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="easyfuse.filesystem.Directory.update_modified">
-<code class="descname">update_modified</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/filesystem.py#L108-L110"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.filesystem.Directory.update_modified" title="Permalink to this definition">¶</a></dt>
-<dd><p>Update the modified time to the current time.</p>
-</dd></dl>
-
-<dl class="attribute">
 <dt id="easyfuse.filesystem.Directory.children">
-<code class="descname">children</code><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/filesystem.py#L221-L226"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.filesystem.Directory.children" title="Permalink to this definition">¶</a></dt>
+<code class="descname">children</code><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/filesystem.py#L266-L273"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.filesystem.Directory.children" title="Permalink to this definition">¶</a></dt>
 <dd><p>A <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.5)"><code class="xref py py-obj docutils literal"><span class="pre">dict</span></code></a> of the children of the directory.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="easyfuse.filesystem.Directory.path">
+<code class="descname">path</code><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/filesystem.py#L275-L278"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.filesystem.Directory.path" title="Permalink to this definition">¶</a></dt>
+<dd><p>The full path of this directory from the mount directory.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="easyfuse.filesystem.Directory.dirty_children">
+<code class="descname">dirty_children</code><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/filesystem.py#L280-L287"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.filesystem.Directory.dirty_children" title="Permalink to this definition">¶</a></dt>
+<dd><p>Indicates if the <a class="reference internal" href="#easyfuse.filesystem.Directory.children" title="easyfuse.filesystem.Directory.children"><code class="xref py py-obj docutils literal"><span class="pre">children</span></code></a> need to be synced.</p>
+<p>It is set to <a class="reference external" href="https://docs.python.org/3/library/constants.html#True" title="(in Python v3.5)"><code class="xref py py-obj docutils literal"><span class="pre">True</span></code></a> if a child of this directory is <a class="reference internal" href="#easyfuse.filesystem.BaseEntry.dirty" title="easyfuse.filesystem.BaseEntry.dirty"><code class="xref py py-obj docutils literal"><span class="pre">dirty</span></code></a>
+or has <a class="reference internal" href="#easyfuse.filesystem.Directory.dirty_children" title="easyfuse.filesystem.Directory.dirty_children"><code class="xref py py-obj docutils literal"><span class="pre">dirty_children</span></code></a> itself.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="easyfuse.filesystem.Directory.refresh_children">
-<code class="descname">refresh_children</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/filesystem.py#L228-L235"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.filesystem.Directory.refresh_children" title="Permalink to this definition">¶</a></dt>
+<code class="descname">refresh_children</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/filesystem.py#L295-L302"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.filesystem.Directory.refresh_children" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize children as an empty <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.5)"><code class="xref py py-obj docutils literal"><span class="pre">dict</span></code></a>.</p>
 <p>This method should be overloaded by every implementing class, since the
 actual children should obviously be added as well.
 This method should still be called using <a class="reference external" href="https://docs.python.org/3/library/functions.html#super" title="(in Python v3.5)"><code class="xref py py-obj docutils literal"><span class="pre">super</span></code></a> though.</p>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="easyfuse.filesystem.Directory.path">
-<code class="descname">path</code><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/filesystem.py#L237-L240"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.filesystem.Directory.path" title="Permalink to this definition">¶</a></dt>
-<dd><p>The full path of this directory from the mount directory.</p>
+<dl class="method">
+<dt id="easyfuse.filesystem.Directory.fsync">
+<code class="descname">fsync</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/JelteF/easyfuse/blob/v0.0.1/easyfuse/filesystem.py#L304-L316"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#easyfuse.filesystem.Directory.fsync" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save this entry and <a class="reference internal" href="#easyfuse.filesystem.BaseEntry.fsync" title="easyfuse.filesystem.BaseEntry.fsync"><code class="xref py py-obj docutils literal"><span class="pre">fsync</span></code></a> its children.</p>
+<p>Saving is only done if this entry is <a class="reference internal" href="#easyfuse.filesystem.BaseEntry.dirty" title="easyfuse.filesystem.BaseEntry.dirty"><code class="xref py py-obj docutils literal"><span class="pre">dirty</span></code></a> and syncing
+the children is only done if <a class="reference internal" href="#easyfuse.filesystem.Directory.dirty_children" title="easyfuse.filesystem.Directory.dirty_children"><code class="xref py py-obj docutils literal"><span class="pre">dirty_children</span></code></a> is <a class="reference external" href="https://docs.python.org/3/library/constants.html#True" title="(in Python v3.5)"><code class="xref py py-obj docutils literal"><span class="pre">True</span></code></a>.</p>
 </dd></dl>
 
 </dd></dl>
