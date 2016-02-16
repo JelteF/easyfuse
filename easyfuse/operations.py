@@ -88,6 +88,15 @@ class Operations(LlfuseOperations):
             self._autosync_timer.cancel()
             self._autosync_timer = None
 
+    def destroy(self):
+        """Execute all pending operations before unmount.
+
+        This currently calls `~.cancel_autosync_timer` and and does a
+        `~.fullsync`.
+        """
+        self.cancel_autosync_timer()
+        self.fullsync()
+
     def getattr(self, inode, ctx=None):
         """Basic gettatr method.
 
